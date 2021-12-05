@@ -5,12 +5,22 @@ import com.rockthejvm.lists.RList.from
 import scala.annotation.tailrec
 
 sealed abstract class RList[+T] {
+  /**
+    * Standard functions
+    */
   def head: T
   def tail: RList[T]
   def isEmpty: Boolean
   def ::[S >: T](elem: S): RList[S] = new ::(elem, this)
-  def apply(i: Int): T
 
+  /**
+    * Easy problems
+    */
+  // get element at a given index
+
+  def apply(index: Int): T
+
+  // the size of the list
   def length: Int = {
     // go (acc, [])     => acc
     // go (acc, _ :: t) => go(1 + acc, t)
@@ -32,6 +42,7 @@ sealed abstract class RList[+T] {
     go(this, identity)
   }
 
+  // reverse the list
   def reverse: RList[T] = {
     @tailrec
     // two equations:
@@ -54,6 +65,7 @@ sealed abstract class RList[+T] {
   // O(this.length) + O(this.length)
   // 2 * O(this.length)
   // O(this.length)
+  // concatenate another list to this one
   def ++[S >: T](other: RList[S]): RList[S] = {
     // go(RNil, acc) => acc
     // go(h :: t, acc) => go(t, h :: acc)
@@ -67,6 +79,7 @@ sealed abstract class RList[+T] {
 
   }
 
+  // remove an element at a given index, return a NEW list
   def removeAt(index: Int): RList[T] = {
     // go(_,     acc,     []) = acc.reverse
     // go(0,     acc, _ :: t) = acc.reverse ++ t
@@ -85,6 +98,7 @@ sealed abstract class RList[+T] {
     go(index, RNil, this)
   }
 
+  // the big 3
   // Complexity:
   // O(this.length) * O(f)
   def map[S](f: T => S): RList[S] = {
@@ -117,6 +131,9 @@ sealed abstract class RList[+T] {
     go(RNil, this)
   }
 
+  /**
+    * Medium difficulty problems
+    */
   // run-length encoding
   def rle: RList[(T, Int)] = {
 
@@ -136,6 +153,7 @@ sealed abstract class RList[+T] {
     flatMap(generate(k))
   }
 
+  // duplicate each element a number of times in a row
   def duplicateEach(k: Int): RList[T] = {
     // equations
     // go(3, h :: t, acc) => go(2, h :: t, h :: acc)
@@ -154,6 +172,7 @@ sealed abstract class RList[+T] {
     go(k, this, RNil)
   }
 
+  // rotation by a number of positions to the left
   def rotate(k: Int): RList[T] = {
     // go(0, rem,  acc) => rem ++ acc.reverse
     // go(_, [],  acc)  => acc.reverse
@@ -168,14 +187,6 @@ sealed abstract class RList[+T] {
       }
     go(k % length, this, RNil)
   }
-
-}
-
-object RList {
-  def from[T](it: Iterable[T]): RList[T] =
-    it.foldRight[RList[T]](RNil)(_ :: _)
-
-
 }
 
 case object RNil extends RList[Nothing] {
@@ -183,6 +194,11 @@ case object RNil extends RList[Nothing] {
   override def tail: RList[Nothing] = throw new NoSuchElementException
   override def isEmpty: Boolean = true
   override def toString: String = "[]"
+
+  /**
+    * Easy problems
+    */
+  // get element at a given index
   override def apply(i: Int): Nothing = throw new NoSuchElementException
 
 }
@@ -203,6 +219,11 @@ case class ::[+T](
 
     "[" + toStringTailrec(this, "") + "]"
   }
+
+  /**
+    * Easy problems
+    */
+  // get element at a given index
   override def apply(i: Int): T = {
     @tailrec
     def go(l: RList[T], j: Int): T = {
@@ -213,46 +234,61 @@ case class ::[+T](
   }
 }
 
+object RList {
+  def from[T](it: Iterable[T]): RList[T] =
+    it.foldRight[RList[T]](RNil)(_ :: _)
+
+}
+
 object ListProblems extends App {
 
-  val smallList = 1 :: 2 :: 3 :: RNil // RNil.::(3).::(2).::(1)
-  val largeList = RList.from(1 to 10000)
+  val aSmallList = 1 :: 2 :: 3 :: RNil // RNil.::(3).::(2).::(1)
+  val aLargeList = RList.from(1 to 10000)
+  val oneToTen = RList.from(1 to 10)
 
-  assert( smallList(0) == 1 )
-  assert( smallList(1) == 2 )
-  assert( smallList(2) == 3 )
+  def testEasyFunctions() = {
+    // test get-kth
+    println(aSmallList.apply(0))
+    println(aSmallList.apply(2))
+    println(aLargeList.apply(8735))
 
-  assert( smallList.length == 3 )
+    // test length
+    println(aSmallList.length)
+    println(aLargeList.length)
 
-  assert( smallList.reverse  == (3 :: 2 :: 1 :: RNil) )
-  assert( smallList.reverse2 == (3 :: 2 :: 1 :: RNil) )
-  assert( RNil.reverse == RNil )
+    // test reverse
+    println(aSmallList.reverse)
+    println(aLargeList.reverse)
 
-  assert(largeList.reverse(9999) == 1)
-  assert(((1 :: 2 :: RNil) ++ smallList) == 1 :: 2 :: 1 :: 2 :: 3 :: RNil)
+    // test concat
+    println(aSmallList ++ aLargeList)
 
-  assert( smallList.removeAt(0) == (2 :: 3 :: RNil) )
+    // test removeAt
+    println(aLargeList.removeAt(13))
 
-  assert( RNil.map((_: Int) + 1) == RNil )
-  assert( smallList.map(_ + 1) == (2 :: 3 :: 4 :: RNil) )
+    // map
+    println(aLargeList.map(x => 2 * x))
+    // flatMap
+    val time = System.currentTimeMillis()
+    aLargeList.flatMap(x => x :: (2 * x) :: RNil) // 1.3 seconds!
+    println(System.currentTimeMillis() - time)
+    // filter
+    println(aLargeList.filter(x => x % 2 == 0))
+  }
 
-  assert( smallList.flatMap(i => i :: i :: RNil) == (1 :: 1 :: 2 :: 2 :: 3 :: 3 :: RNil) )
+  /**
+    * Medium difficulty functions
+    */
+  def testMediumDifficultyFunctions() = {
+    // run-length encoding
+    println((1 :: 1 :: 1 :: 2 :: 3 :: 3 :: 4 :: 5 :: 5 :: 5 :: RNil).rle)
+    // duplicateEach
+    println(aSmallList.duplicateEach(4))
+    // rotate
+    for {
+      i <- 1 to 20
+    } println(oneToTen.rotate(i))
+  }
 
-  assert( smallList.filter(_ % 2 == 0) == (2 :: RNil) )
-  assert( smallList.filter(_ % 2 == 1) == (1 :: 3 :: RNil) )
-
-  assert( (RNil).rle == RNil  )
-  assert( (1 :: RNil).rle == (1, 1) :: RNil  )
-  assert( (1 :: 1 :: 2 :: 3 :: 3 :: RNil).rle == (1, 2) :: (2, 1) :: (3, 2) :: RNil  )
-
-  assert( smallList.duplicateEach(2) == 1 ::1 :: 2 :: 2 :: 3 :: 3 :: RNil )
-
-  println( smallList.rotate(0) )
-  println( smallList.rotate(1) )
-  println( smallList.rotate(2) )
-  println( smallList.rotate(3) )
-
-  println( smallList.rotate(4) )
-  println( smallList.rotate(5) )
-  println( smallList.rotate(6) )
+  testMediumDifficultyFunctions()
 }
