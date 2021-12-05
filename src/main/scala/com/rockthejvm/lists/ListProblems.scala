@@ -1,7 +1,7 @@
 package com.rockthejvm.lists
 
 import com.rockthejvm.lists.RList.from
-
+import scala.util.Random
 import scala.annotation.tailrec
 
 sealed abstract class RList[+T] {
@@ -187,6 +187,19 @@ sealed abstract class RList[+T] {
       }
     go(k % length, this, RNil)
   }
+
+  // random sample
+  def sample(k: Int): RList[T] = {
+   @tailrec
+   def go(i: Int, acc: RList[T]): RList[T] =
+     if i <= 0 || this.isEmpty
+     then
+       acc
+     else
+      go(i - 1, this.apply(Random.nextInt(this.length)) :: acc)
+
+    go(k, RNil)
+  }
 }
 
 case object RNil extends RList[Nothing] {
@@ -288,7 +301,10 @@ object ListProblems extends App {
     for {
       i <- 1 to 20
     } println(oneToTen.rotate(i))
+
   }
 
-  testMediumDifficultyFunctions()
+//  testMediumDifficultyFunctions()
+
+  println(aLargeList.sample(1000))
 }
