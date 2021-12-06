@@ -199,6 +199,9 @@ sealed abstract class RList[+T] {
       go(i - 1, this.apply(Random.nextInt(this.length)) :: acc)
 
     go(k, RNil)
+
+    RList.from(List.fill(k)(this.apply(Random.nextInt(this.length))))
+    RList.from((1 to k).map(_ => Random.nextInt(this.length)).map(apply))
   }
 }
 
