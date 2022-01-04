@@ -23,7 +23,7 @@ sealed abstract class RList[+T] {
   def foldLeft[A](init: A)(step: (A, T) => A): A = {
     @tailrec
     def go(ts: RList[T], acc: A): A = ts match
-      case RNil => acc
+      case RNil   => acc
       case h :: t => go(t, step(acc, h))
 
     go(this, init)
@@ -38,7 +38,9 @@ sealed abstract class RList[+T] {
       case RNil   => acc
       case _ :: t => go(1 + acc, t)
     }
-    go(0, this)
+//    go(0, this)
+
+    foldLeft(0)((acc, _) => 1 + acc)
   }
 
   // Not tail recursive!!
@@ -61,12 +63,14 @@ sealed abstract class RList[+T] {
       case RNil   =>            acc
       case h :: t => go(t, h :: acc)
     }
-    go(this, RNil)
+//    go(this, RNil)
     // go(1 :: 2 :: 3 :: RNil,   RNil) ==
     // go(2 :: 3 :: RNil,   1 :: RNil) ==
     // go(3 :: RNil,   2 :: 1 :: RNil) ==
     // go(RNil,   3 :: 2 :: 1 :: RNil) ==
     //            3 :: 2 :: 1 :: RNil
+
+    foldLeft(RNil: RList[T])((acc, h) => h :: acc)
   }
 
   // complexity:
@@ -84,7 +88,9 @@ sealed abstract class RList[+T] {
       case h :: t => go(t, h :: acc)
     }
 
-    go(this.reverse, other)
+//    go(this.reverse, other)
+
+    this.reverse.foldLeft(other)((acc, h) => h :: acc)
 
   }
 
@@ -116,7 +122,8 @@ sealed abstract class RList[+T] {
       case RNil   => acc.reverse
       case h :: t => map_(t, f(h) :: acc)
     }
-    map_(this, RNil)
+//    map_(this, RNil)
+    this.reverse.foldLeft(RNil: RList[S])((acc, h) => f(h) :: acc)
   }
 
   // Complexity:
@@ -139,7 +146,9 @@ sealed abstract class RList[+T] {
       case RNil => concatenateAll(acc, RNil, RNil)
       case h :: t => flatMap1_(t, f(h).reverse :: acc)
 
-    flatMap_(this, RNil)
+//    flatMap_(this, RNil)
+//    this.reverse.foldLeft(RNil: RList[S])((acc, h) => f(h) ++ acc)
+    flatMap1_(this, RNil)
   }
 
 
@@ -343,5 +352,10 @@ object ListProblems extends App {
 //  testMediumDifficultyFunctions()
 //  testEasyFunctions()
 //  println(aLargeList.sample(1000))
-  println(aSmallList.foldLeft(1)( _ * _))
+//  println(aSmallList.foldLeft(1)( _ * _))
+//  println(aSmallList.length)
+//  println(aSmallList.reverse)
+//  println(aSmallList ++ aSmallList)
+//  println(aSmallList.map(_ + 1))
+  println(aSmallList.flatMap(h => h :: (h + 1) :: RNil))
 }
