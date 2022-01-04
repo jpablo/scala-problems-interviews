@@ -242,10 +242,10 @@ sealed abstract class RList[+T] {
 //      case h :: t => if h <= s then h :: sort1NonTC(t, s) else s :: sorted
 
     @tailrec
-    def sort1(lteqRev: RList[S], s: S, pending: RList[S]): RList[S] =
-      if pending.isEmpty || pending.head > s
-      then (s :: lteqRev).reverse ++ pending
-      else sort1(pending.head :: lteqRev, s, pending.tail)
+    def sort1(beforeRev: RList[S], s: S, after: RList[S]): RList[S] =
+      if after.isEmpty || after.head > s
+      then (s :: beforeRev).reverse ++ after
+      else sort1(after.head :: beforeRev, s, after.tail)
 
 //    @tailrec
 //    def sortAll(ts: RList[T], acc: RList[S]): RList[S] = ts match
