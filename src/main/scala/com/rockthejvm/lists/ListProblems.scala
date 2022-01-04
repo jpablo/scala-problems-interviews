@@ -237,15 +237,16 @@ sealed abstract class RList[+T] {
   def sorted[S >: T: Ordering]: RList[S] = {
     import math.Ordering.Implicits.infixOrderingOps
 
-    def sort1NonTC(sorted: RList[S], s: S): RList[S] = sorted match
-      case RNil   => s :: sorted
-      case h :: t => if h <= s then h :: sort1NonTC(t, s) else s :: sorted
+    def sort1NonTC(s: S, after: RList[S]): RList[S] =
+      if after.isEmpty || after.head > s
+      then s :: after
+      else after.head :: sort1NonTC(s, after.tail)
 
 
     @tailrec
     def sort1(beforeRev: RList[S], s: S, after: RList[S]): RList[S] =
       if after.isEmpty || after.head > s
-      then (s :: beforeRev).reverse ++ after
+      then beforeRev.reverse ++ (s :: after)
       else sort1(after.head :: beforeRev, s, after.tail)
 
 //    @tailrec
@@ -254,7 +255,8 @@ sealed abstract class RList[+T] {
 //      case h :: t => sortAll(t, sort1(RNil, h, acc))
 
 //    sortAll(this, RNil)
-    foldLeft(RNil : RList[S])((acc, h) => sort1(RNil, h, acc))
+//    foldLeft(RNil : RList[S])((acc, h) => sort1(RNil, h, acc))
+    foldLeft(RNil : RList[S])((acc, h) => sort1NonTC(h, acc))
   }
 
 
