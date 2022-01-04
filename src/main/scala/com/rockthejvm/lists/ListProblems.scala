@@ -112,14 +112,19 @@ sealed abstract class RList[+T] {
 
   // Complexity:
   // O(Z^2)
-  def flatMap[S](f: T => RList[S]): RList[S] = {
-    @tailrec
-    def flatMap_(rem: RList[T], acc: RList[S]): RList[S] = rem match {
+  def flatMap[S](f: T => RList[S]): RList[S] =
+    @tailrec def flatMap_(rem: RList[T], acc: RList[S]): RList[S] = rem match
       case RNil   => acc.reverse
       case h :: t => flatMap_(t, f(h) ++ acc)
-    }
+
     flatMap_(this, RNil)
-  }
+
+
+//  def flatMap1[S](f: T => RList[S]): RList[S] =
+//    @tailrec def flatMap_(rem: RList[T], acc: RList[RList[S]]): RList[S] = rem match
+//      case RNil   => acc.reverse
+//      case h :: t => flatMap_(t, f(h) :: acc)
+
 
   def filter(pred: T => Boolean): RList[T] = {
     @tailrec
