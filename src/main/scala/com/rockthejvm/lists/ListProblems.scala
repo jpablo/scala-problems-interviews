@@ -151,13 +151,6 @@ sealed abstract class RList[+T] {
     flatMap1_(this, RNil)
   }
 
-
-//  def flatMap1[S](f: T => RList[S]): RList[S] =
-//    @tailrec def flatMap_(rem: RList[T], acc: RList[RList[S]]): RList[S] = rem match
-//      case RNil   => acc.reverse
-//      case h :: t => flatMap_(t, f(h) :: acc)
-
-
   def filter(pred: T => Boolean): RList[T] = {
     @tailrec
     def go(acc: RList[T], rem: RList[T]): RList[T] = rem match {
@@ -241,10 +234,49 @@ sealed abstract class RList[+T] {
     RList.from((1 to k).map(_ => Random.nextInt(this.length)).map(apply))
   }
 
-  def sorted[S >: T](ordering: Ordering[S]): RList[S] = {
+  def sorted[S >: T: Ordering]: RList[S] = {
+    import math.Ordering.Implicits.infixOrderingOps
 
-    ???
+//    def sort1NonTC(sorted: RList[S], s: S): RList[S] = sorted match
+//      case RNil   => s :: sorted
+//      case h :: t => if h <= s then h :: sort1NonTC(t, s) else s :: sorted
+
+    @tailrec
+    def sort1(lteqRev: RList[S], s: S, pending: RList[S]): RList[S] =
+      if pending.isEmpty || pending.head > s
+      then (s :: lteqRev).reverse ++ pending
+      else sort1(pending.head :: lteqRev, s, pending.tail)
+
+//    @tailrec
+//    def sortAll(ts: RList[T], acc: RList[S]): RList[S] = ts match
+//      case RNil   => acc
+//      case h :: t => sortAll(t, sort1(RNil, h, acc))
+
+//    sortAll(this, RNil)
+    foldLeft(RNil : RList[S])((acc, h) => sort1(RNil, h, acc))
   }
+
+
+  def sorted2[S >: T: Ordering]: RList[S] = {
+    import math.Ordering.Implicits.infixOrderingOps
+
+    var ts = this
+    var acc: RList[S] = RNil
+    while !ts.isEmpty do
+      var lteqRev: RList[S] = RNil
+      var pending: RList[S] = acc
+      var done = false
+      while !done do
+        if pending.isEmpty || pending.head > ts.head then
+          done = true
+          acc = (ts.head :: lteqRev).reverse ++ pending
+        else
+          lteqRev = pending.head :: lteqRev
+          pending = pending.tail
+      ts = ts.tail
+    acc
+  }
+
 }
 
 case object RNil extends RList[Nothing] {
@@ -357,5 +389,7 @@ object ListProblems extends App {
 //  println(aSmallList.reverse)
 //  println(aSmallList ++ aSmallList)
 //  println(aSmallList.map(_ + 1))
-  println(aSmallList.flatMap(h => h :: (h + 1) :: RNil))
+//  println(aSmallList.flatMap(h => h :: (h + 1) :: RNil))
+  println( (2 :: 1 :: 5 :: 3 :: 0 :: RNil).sorted )
+  println( (2 :: 1 :: 5 :: 3 :: 0 :: RNil).sorted2 )
 }
