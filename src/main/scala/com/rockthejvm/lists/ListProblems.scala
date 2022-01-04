@@ -20,6 +20,15 @@ sealed abstract class RList[+T] {
 
   def apply(index: Int): T
 
+  def foldLeft[A](init: A)(step: (A, T) => A): A = {
+    @tailrec
+    def go(ts: RList[T], acc: A): A = ts match
+      case RNil => acc
+      case h :: t => go(t, step(acc, h))
+
+    go(this, init)
+  }
+
   // the size of the list
   def length: Int = {
     // go (acc, [])     => acc
@@ -112,12 +121,26 @@ sealed abstract class RList[+T] {
 
   // Complexity:
   // O(Z^2)
-  def flatMap[S](f: T => RList[S]): RList[S] =
-    @tailrec def flatMap_(rem: RList[T], acc: RList[S]): RList[S] = rem match
-      case RNil   => acc.reverse
+  def flatMap[S](f: T => RList[S]): RList[S] = {
+    @tailrec
+    def flatMap_(rem: RList[T], acc: RList[S]): RList[S] = rem match
+      case RNil => acc.reverse
       case h :: t => flatMap_(t, f(h) ++ acc)
 
+    @tailrec
+    def concatenateAll(xss: RList[RList[S]], cur: RList[S], acc: RList[S]): RList[S] =
+      (xss, cur) match
+        case (RNil, RNil)     => acc
+        case (hh :: tt, RNil) => concatenateAll(tt, hh, acc)
+        case (_, h :: t)      => concatenateAll(xss, t, h :: acc)
+
+    @tailrec
+    def flatMap1_(rem: RList[T], acc: RList[RList[S]]): RList[S] = rem match
+      case RNil => concatenateAll(acc, RNil, RNil)
+      case h :: t => flatMap1_(t, f(h).reverse :: acc)
+
     flatMap_(this, RNil)
+  }
 
 
 //  def flatMap1[S](f: T => RList[S]): RList[S] =
@@ -207,6 +230,11 @@ sealed abstract class RList[+T] {
 
     RList.from(List.fill(k)(this.apply(Random.nextInt(this.length))))
     RList.from((1 to k).map(_ => Random.nextInt(this.length)).map(apply))
+  }
+
+  def sorted[S >: T](ordering: Ordering[S]): RList[S] = {
+
+    ???
   }
 }
 
@@ -313,6 +341,7 @@ object ListProblems extends App {
   }
 
 //  testMediumDifficultyFunctions()
-
-  println(aLargeList.sample(1000))
+//  testEasyFunctions()
+//  println(aLargeList.sample(1000))
+  println(aSmallList.foldLeft(1)( _ * _))
 }
