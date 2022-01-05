@@ -14,6 +14,8 @@
     <orderEntry type="module-library" scope="PROVIDED">
       <library name="sbt: sbt-1.5.5">
         <CLASSES>
+          <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/lib/jansi.jar!/" />
+          <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/lib/jline.jar!/" />
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/lib/scala-compiler.jar!/" />
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/lib/scala-library.jar!/" />
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/lib/scala-reflect.jar!/" />
@@ -81,9 +83,9 @@
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/ssl-config-core_2.12-0.4.0.jar!/" />
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/task-system_2.12-1.5.5.jar!/" />
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/tasks_2.12-1.5.5.jar!/" />
-          <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/template-resolver.jar!/" />
+          <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/template-resolver-0.1.jar!/" />
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/test-agent-1.5.5.jar!/" />
-          <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/test-interface-0.0.jar!/" />
+          <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/test-interface-1.0.jar!/" />
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/testing_2.12-1.5.5.jar!/" />
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/util-cache_2.12-1.5.5.jar!/" />
           <root url="jar://$USER_HOME$/.sbt/boot/scala-2.12.14/org.scala-sbt/sbt/1.5.5/util-control_2.12-1.5.5.jar!/" />

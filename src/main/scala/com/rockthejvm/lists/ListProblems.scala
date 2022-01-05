@@ -234,19 +234,39 @@ sealed abstract class RList[+T] {
     RList.from((1 to k).map(_ => Random.nextInt(this.length)).map(apply))
   }
 
+
   def sorted[S >: T: Ordering]: RList[S] = {
     import math.Ordering.Implicits.infixOrderingOps
 
     // ------------------------
     // Naive recursive function
     // ------------------------
+
+    // insert1NonTC(s, Nil)    => s :: Nil
+    // insert1NonTC(s, h :: t) => s :: h :: t               // s < h
+    // insert1NonTC(s, h :: t) => h :: insert1NonTC(s, t)   // s >= h
+
     def insert1NonTC(s: S, lst: RList[S]): RList[S] =
       if lst.isEmpty || s < lst.head
       then s :: lst // this allows us to identify the type of the continuation
       else
-        val retValue = insert1NonTC(s, lst.tail)
-        lst.head :: retValue
-      // after.head :: after.tail.head :: s :: after.tail.tail
+        lst.head :: insert1NonTC(s, lst.tail)
+    // lst.head :: lst.tail.head :: s :: lst.tail.tail
+
+
+    // --------------------------------
+    // Standard tail-recursive version
+    // --------------------------------
+
+    @tailrec
+    def insert1(s: S, lst: RList[S], acc: RList[S]): RList[S] = // (1)
+      if lst.isEmpty || s < lst.head
+      then
+        acc.reverse ++ (s :: lst)                              // (3)
+      else
+        insert1(s, lst.tail, lst.head :: acc)                  // (2)
+
+    // (1) -> (2), (2), ... -> (3)
 
 
     // -----------------------
@@ -259,12 +279,12 @@ sealed abstract class RList[+T] {
       acc => cont(lst.head :: acc)
 
     @tailrec
-    def insert1NonTC_1[S: Ordering](s: S, lst: RList[S], cont: Cont[S]): RList[S] =
-//      println((s, lst))
+    def insert1NonTC_1[S: Ordering](s: S, lst: RList[S], k: Cont[S]): RList[S] =
       if (lst.isEmpty || s < lst.head)
-      then cont(s :: lst) // free variables: s, lst
-      else insert1NonTC_1(s, lst.tail, retValue => cont(lst.head :: retValue)) // free variables: lst, cont
-//      else insert1NonTC_1(s, lst.tail, buildCont(lst, cont))
+      then
+        k(s :: lst)
+      else
+        insert1NonTC_1(s, lst.tail, k compose (acc => lst.head :: acc))
 
 
     // --------------------------------
@@ -285,15 +305,6 @@ sealed abstract class RList[+T] {
         insert1NonTC_2(s, lst.tail, Kont.Next(lst, kont))
 
 
-    // --------------------------------
-    // Standard tail-recursive version
-    // --------------------------------
-
-    @tailrec
-    def insert1(beforeRev: RList[S], s: S, lst: RList[S]): RList[S] =
-      if lst.isEmpty || s < lst.head
-      then beforeRev.reverse ++ (s :: lst)
-      else insert1(lst.head :: beforeRev, s, lst.tail)
 
 //    @tailrec
 //    def sortAll(ts: RList[T], acc: RList[S]): RList[S] = ts match
@@ -306,8 +317,8 @@ sealed abstract class RList[+T] {
     println("sorting: " + this)
     foldLeft(RNil : RList[S])((acc, h) => {
       println("fold: ");
-      insert1NonTC_2(h, acc, Kont.Done(RNil))
-//      insert1NonTC_1(h, acc, x => {println(x); x})
+//      insert1NonTC_2(h, acc, Kont.Done(RNil))
+      insert1NonTC_1(h, acc, x => {println(x); x})
     })
   }
 
