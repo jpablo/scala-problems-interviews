@@ -259,12 +259,12 @@ sealed abstract class RList[+T] {
     // --------------------------------
 
     @tailrec
-    def insert1(s: S, lst: RList[S], acc: RList[S]): RList[S] = // (1)
-      if lst.isEmpty || s < lst.head
+    def insert1(s: S, rest: RList[S], acc: RList[S]): RList[S] = // (1)
+      if rest.isEmpty || s < rest.head
       then
-        acc.reverse ++ (s :: lst)                              // (3)
+        acc.reverse ++ (s :: rest)                              // (3)
       else
-        insert1(s, lst.tail, lst.head :: acc)                  // (2)
+        insert1(s, rest.tail, rest.head :: acc)                  // (2)
 
     // (1) -> (2), (2), ... -> (3)
 
@@ -279,30 +279,27 @@ sealed abstract class RList[+T] {
       acc => cont(lst.head :: acc)
 
     @tailrec
-    def insert1NonTC_1[S: Ordering](s: S, lst: RList[S], k: Cont[S]): RList[S] =
-      if (lst.isEmpty || s < lst.head)
+    def insert1NonTC_1[S: Ordering](s: S, rest: RList[S], k: Cont[S]): RList[S] =
+      if rest.isEmpty || s < rest.head
       then
-        k(s :: lst)
+        k(s :: rest)
       else
-        insert1NonTC_1(s, lst.tail, k compose (acc => lst.head :: acc))
+        insert1NonTC_1(s, rest.tail, k compose (acc => rest.head :: acc))
 
 
     // --------------------------------
     // Defunctionalize the CPS version
     // --------------------------------
-    enum Kont[S]:
-      case Done()
-      case Next(lst: RList[S], next: Kont[S])
-
-    @tailrec
-    def insert1NonTC_2[S: Ordering](s: S, lst: RList[S], kont: Kont[S]): RList[S] =
-      if (lst.isEmpty || s < lst.head)
-      then
-        kont match
-          case Kont.Done() => Kont.Next(s :: lst, kont)
-          case Kont.Next(lst, next) =>
-      else
-        insert1NonTC_2(s, lst.tail, Kont.Next(lst, kont))
+//    enum Kont[S]:
+//      case Next(h: S, next: Kont[S])
+//
+//    @tailrec
+//    def insert1Def[S: Ordering](s: S, rest: RList[S], k: Kont[S]): RList[S] =
+//      if rest.isEmpty || s < rest.head
+//      then k match
+//        case Kont.Next(h, next) => ???
+//      else
+//        insert1Def(s, rest.tail, Kont.Next(rest.head, k))
 
 
 
@@ -317,7 +314,7 @@ sealed abstract class RList[+T] {
     println("sorting: " + this)
     foldLeft(RNil : RList[S])((acc, h) => {
       println("fold: ");
-//      insert1NonTC_2(h, acc, Kont.Done(RNil))
+//      insert1Def(h, acc, Kont.Done(RNil))
       insert1NonTC_1(h, acc, x => {println(x); x})
     })
   }
