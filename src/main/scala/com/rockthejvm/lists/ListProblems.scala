@@ -237,17 +237,63 @@ sealed abstract class RList[+T] {
   def sorted[S >: T: Ordering]: RList[S] = {
     import math.Ordering.Implicits.infixOrderingOps
 
-    def sort1NonTC(s: S, after: RList[S]): RList[S] =
-      if after.isEmpty || after.head > s
-      then s :: after
-      else after.head :: sort1NonTC(s, after.tail)
+    // ------------------------
+    // Naive recursive function
+    // ------------------------
+    def insert1NonTC(s: S, lst: RList[S]): RList[S] =
+      if lst.isEmpty || s < lst.head
+      then s :: lst // this allows us to identify the type of the continuation
+      else
+        val retValue = insert1NonTC(s, lst.tail)
+        lst.head :: retValue
+      // after.head :: after.tail.head :: s :: after.tail.tail
 
+
+    // -----------------------
+    // CPS transformation:
+    // -----------------------
+    type Cont[S] = RList[S] => RList[S]
+
+    // this will be the evaluation function of the "Next" case
+    def buildCont[S](lst: RList[S], cont: Cont[S]): Cont[S] =
+      acc => cont(lst.head :: acc)
 
     @tailrec
-    def sort1(beforeRev: RList[S], s: S, after: RList[S]): RList[S] =
-      if after.isEmpty || after.head > s
-      then beforeRev.reverse ++ (s :: after)
-      else sort1(after.head :: beforeRev, s, after.tail)
+    def insert1NonTC_1[S: Ordering](s: S, lst: RList[S], cont: Cont[S]): RList[S] =
+//      println((s, lst))
+      if (lst.isEmpty || s < lst.head)
+      then cont(s :: lst) // free variables: s, lst
+      else insert1NonTC_1(s, lst.tail, retValue => cont(lst.head :: retValue)) // free variables: lst, cont
+//      else insert1NonTC_1(s, lst.tail, buildCont(lst, cont))
+
+
+    // --------------------------------
+    // Defunctionalize the CPS version
+    // --------------------------------
+    enum Kont[S]:
+      case Done()
+      case Next(lst: RList[S], next: Kont[S])
+
+    @tailrec
+    def insert1NonTC_2[S: Ordering](s: S, lst: RList[S], kont: Kont[S]): RList[S] =
+      if (lst.isEmpty || s < lst.head)
+      then
+        kont match
+          case Kont.Done() => Kont.Next(s :: lst, kont)
+          case Kont.Next(lst, next) =>
+      else
+        insert1NonTC_2(s, lst.tail, Kont.Next(lst, kont))
+
+
+    // --------------------------------
+    // Standard tail-recursive version
+    // --------------------------------
+
+    @tailrec
+    def insert1(beforeRev: RList[S], s: S, lst: RList[S]): RList[S] =
+      if lst.isEmpty || s < lst.head
+      then beforeRev.reverse ++ (s :: lst)
+      else insert1(lst.head :: beforeRev, s, lst.tail)
 
 //    @tailrec
 //    def sortAll(ts: RList[T], acc: RList[S]): RList[S] = ts match
@@ -256,7 +302,13 @@ sealed abstract class RList[+T] {
 
 //    sortAll(this, RNil)
 //    foldLeft(RNil : RList[S])((acc, h) => sort1(RNil, h, acc))
-    foldLeft(RNil : RList[S])((acc, h) => sort1NonTC(h, acc))
+//    foldLeft(RNil : RList[S])((acc, h) => insert1NonTC(h, acc))
+    println("sorting: " + this)
+    foldLeft(RNil : RList[S])((acc, h) => {
+      println("fold: ");
+      insert1NonTC_2(h, acc, Kont.Done(RNil))
+//      insert1NonTC_1(h, acc, x => {println(x); x})
+    })
   }
 
 
@@ -393,6 +445,17 @@ object ListProblems extends App {
 //  println(aSmallList ++ aSmallList)
 //  println(aSmallList.map(_ + 1))
 //  println(aSmallList.flatMap(h => h :: (h + 1) :: RNil))
-  println( (2 :: 1 :: 5 :: 3 :: 0 :: RNil).sorted )
-  println( (2 :: 1 :: 5 :: 3 :: 0 :: RNil).sorted2 )
+  val unorderedLst: RList[Int] = 2 :: 1 :: 5 :: 3 :: 0 :: RNil
+  println( unorderedLst.sorted )
+  println( unorderedLst.sorted2 )
+
+//  import math.Ordering.Implicits.infixOrderingOps
+//  @tailrec
+//  def insert1NonTC_1[S: Ordering](s: S, lst: RList[S], cont: RList[S] => RList[S]): RList[S] =
+//    if (lst.isEmpty || s < lst.head)
+//    then cont(s :: lst)
+//    else insert1NonTC_1(s, lst.tail, lst.head :: _)
+
+//  println(insert1NonTC_1(2, unorderedLst, identity))
+
 }
