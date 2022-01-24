@@ -359,19 +359,30 @@ sealed abstract class RList[+T] {
   def mergeSort1[S >: T: Ordering]: RList[S] = {
     import math.Ordering.Implicits.infixOrderingOps
 
-    def merge(l: RList[S], r: RList[S]): RList[S] = (l, r) match
-      case (h1 :: t1, h2 :: t2) =>
-        if h1 <= h2 then h1 :: merge(t1, r) else h2 :: merge(l, t2)
-      case (_, RNil) => l
-      case (RNil, _) => r
+//    def merge(l: RList[S], r: RList[S]): RList[S] = (l, r) match
+//      case (h1 :: t1, h2 :: t2) =>
+//        if h1 <= h2 then h1 :: merge(t1, r) else h2 :: merge(l, t2)
+//      case (_, RNil) => l
+//      case (RNil, _) => r
+
+    @tailrec
+    def mergeTR(l: RList[S], r: RList[S], acc: RList[S]): RList[S] = (l, r) match
+      case (a :: tl, b :: tr) => if a <= b then mergeTR(tl, r, a :: acc) else mergeTR(l, tr, b :: acc)
+      case (l, RNil)          => acc.reverse ++ l
+      case (RNil, r)          => acc.reverse ++ r
 
     if length < 2 then this
     else
       val (left, right) = splitAt(length / 2)
-      val sortedLeft = left.mergeSort1
-      val sortedRight = right.mergeSort1
-      merge(sortedLeft, sortedRight)
+      println(s"(left = $left, right = $right)")
+      mergeTR(left.mergeSort1, right.mergeSort1, RNil)
   }
+
+
+
+
+
+
 }
 
 case object RNil extends RList[Nothing] {
