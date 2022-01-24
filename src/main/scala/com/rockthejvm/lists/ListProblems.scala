@@ -341,7 +341,7 @@ sealed abstract class RList[+T] {
   }
 
 
-  def splitAt(n: Int): (RList[T], RList[T]) =
+  def splitAt(n: Int): (RList[T], RList[T]) = {
     @tailrec
     def split_(rest: RList[T], n: Int, acc: RList[T]): (RList[T], RList[T]) =
       if n <= 0 || rest.isEmpty
@@ -349,21 +349,29 @@ sealed abstract class RList[+T] {
       else split_(rest.tail, n - 1, rest.head :: acc)
 
     split_(this, n, RNil)
+  }
 
   /**
     * - split the list in half
     * - sort each half recursively
     * - merge sorted halves
     */
-  def mergeSort[S >: T: Ordering]: RList[S] =
-    def merge(l: RList[S], r: RList[S]): RList[S] = ???
-//    def mergeSort_(lst: RList[S])
+  def mergeSort1[S >: T: Ordering]: RList[S] = {
+    import math.Ordering.Implicits.infixOrderingOps
+
+    def merge(l: RList[S], r: RList[S]): RList[S] = (l, r) match
+      case (h1 :: t1, h2 :: t2) =>
+        if h1 <= h2 then h1 :: merge(t1, r) else h2 :: merge(l, t2)
+      case (_, RNil) => l
+      case (RNil, _) => r
+
     if length < 2 then this
     else
       val (left, right) = splitAt(length / 2)
-      val sortedLeft = left.mergeSort
-      val sortedRight = right.mergeSort
+      val sortedLeft = left.mergeSort1
+      val sortedRight = right.mergeSort1
       merge(sortedLeft, sortedRight)
+  }
 }
 
 case object RNil extends RList[Nothing] {
@@ -478,8 +486,10 @@ object ListProblems extends App {
 //  println(aSmallList.map(_ + 1))
 //  println(aSmallList.flatMap(h => h :: (h + 1) :: RNil))
   val unorderedLst: RList[Int] = 2 :: 1 :: 5 :: 3 :: 0 :: RNil
-  println( unorderedLst.insertSort )
-  println( unorderedLst.sorted2 )
+//  println( unorderedLst.insertSort )
+//  println( unorderedLst.sorted2 )
+//  println(unorderedLst.splitAt(0))
+  println(unorderedLst.mergeSort1)
 
 //  import math.Ordering.Implicits.infixOrderingOps
 //  @tailrec
