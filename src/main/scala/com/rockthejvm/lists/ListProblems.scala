@@ -359,12 +359,6 @@ sealed abstract class RList[+T] {
   def mergeSort1[S >: T: Ordering]: RList[S] = {
     import math.Ordering.Implicits.infixOrderingOps
 
-//    def merge(l: RList[S], r: RList[S]): RList[S] = (l, r) match
-//      case (h1 :: t1, h2 :: t2) =>
-//        if h1 <= h2 then h1 :: merge(t1, r) else h2 :: merge(l, t2)
-//      case (_, RNil) => l
-//      case (RNil, _) => r
-
     @tailrec
     def mergeTR(l: RList[S], r: RList[S], acc: RList[S]): RList[S] = (l, r) match
       case (a :: tl, b :: tr) => if a <= b then mergeTR(tl, r, a :: acc) else mergeTR(l, tr, b :: acc)
@@ -374,8 +368,27 @@ sealed abstract class RList[+T] {
     if length < 2 then this
     else
       val (left, right) = splitAt(length / 2)
-      println(s"(left = $left, right = $right)")
       mergeTR(left.mergeSort1, right.mergeSort1, RNil)
+  }
+
+
+  def mergeSort[S >: T: Ordering]: RList[S] = {
+    import math.Ordering.Implicits.infixOrderingOps
+
+    @tailrec
+    def mergeTR(l: RList[S], r: RList[S], acc: RList[S]): RList[S] = (l, r) match
+      case (a :: tl, b :: tr) => if a <= b then mergeTR(tl, r, a :: acc) else mergeTR(l, tr, b :: acc)
+      case (l, RNil)          => acc.reverse ++ l
+      case (RNil, r)          => acc.reverse ++ r
+
+    def mergeSort_(lst: RList[S], k: RList[S] => RList[S]): RList[S] =
+      if lst.length < 2 then
+        k(lst)
+      else
+        val (l, r) = lst.splitAt(lst.length / 2)
+        mergeSort_(l, al => mergeSort_(r, ar => k(mergeTR(al, ar, RNil))))
+
+    mergeSort_(this, identity)
   }
 
 
@@ -500,7 +513,9 @@ object ListProblems extends App {
 //  println( unorderedLst.insertSort )
 //  println( unorderedLst.sorted2 )
 //  println(unorderedLst.splitAt(0))
-  println(unorderedLst.mergeSort1)
+//  println((2 :: RNil).mergeSort)
+//  println((2 :: 1:: RNil).mergeSort)
+  println(unorderedLst.mergeSort)
 
 //  import math.Ordering.Implicits.infixOrderingOps
 //  @tailrec
