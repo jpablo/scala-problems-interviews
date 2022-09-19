@@ -1,8 +1,9 @@
 package com.rockthejvm.lists
 
 import com.rockthejvm.lists.RList.from
+
 import scala.util.Random
-import scala.annotation.tailrec
+import scala.annotation.{tailrec, targetName}
 
 sealed abstract class RList[+T] {
   /**
@@ -20,11 +21,12 @@ sealed abstract class RList[+T] {
 
   def apply(index: Int): T
 
+  // complexity: O(length) * O(step)
   def foldLeft[A](init: A)(step: (A, T) => A): A = {
     @tailrec
     def go(ts: RList[T], acc: A): A = ts match
-      case RNil   => acc
-      case h :: t => go(t, step(acc, h))
+      case RNil   => acc                        // match: 1
+      case h :: t => go(t, step(acc, h))        // deconstruct: 1;  step: O(step)
 
     go(this, init)
   }
@@ -70,6 +72,7 @@ sealed abstract class RList[+T] {
     // go(RNil,   3 :: 2 :: 1 :: RNil) ==
     //            3 :: 2 :: 1 :: RNil
 
+    // Complexity: O(n * 1) ~ O(n)
     foldLeft(RNil: RList[T])((acc, h) => h :: acc)
   }
 
@@ -79,6 +82,7 @@ sealed abstract class RList[+T] {
   // 2 * O(this.length)
   // O(this.length)
   // concatenate another list to this one
+  @targetName("concat")
   def ++[S >: T](other: RList[S]): RList[S] = {
     // go(RNil, acc) => acc
     // go(h :: t, acc) => go(t, h :: acc)
@@ -126,30 +130,38 @@ sealed abstract class RList[+T] {
     this.reverse.foldLeft(RNil: RList[S])((acc, h) => f(h) :: acc)
   }
 
+
+
   // Complexity:
-  // O(Z^2)
   def flatMap[S](f: T => RList[S]): RList[S] = {
+
+    // O(Z^2)
+    // On Every step we use ++ which is O(n)
     @tailrec
     def flatMap_(rem: RList[T], acc: RList[S]): RList[S] = rem match
-      case RNil => acc.reverse
-      case h :: t => flatMap_(t, f(h) ++ acc)
+      case RNil   => acc.reverse
+      case remHead :: remTail => flatMap_(remTail, f(remHead) ++ acc)
 
     @tailrec
-    def concatenateAll(xss: RList[RList[S]], cur: RList[S], acc: RList[S]): RList[S] =
-      (xss, cur) match
-        case (RNil, RNil)     => acc
-        case (hh :: tt, RNil) => concatenateAll(tt, hh, acc)
-        case (_, h :: t)      => concatenateAll(xss, t, h :: acc)
+    def concatenateAll(elements: RList[RList[S]], cur: RList[S], acc: RList[S]): RList[S] =
+      (elements, cur) match
+        case (RNil    , RNil  ) => acc                                     // O(1)
+        case (hh :: tt, RNil  ) => concatenateAll(tt, hh, acc)             // O(1) +
+        case (_       , h :: t) => concatenateAll(elements, t, h :: acc)   // 2
 
+    // Complexity:
     @tailrec
-    def flatMap1_(rem: RList[T], acc: RList[RList[S]]): RList[S] = rem match
-      case RNil => concatenateAll(acc, RNil, RNil)
-      case h :: t => flatMap1_(t, f(h).reverse :: acc)
+    def flatMap1_(rem: RList[T], acc: RList[RList[S]]): RList[S] = rem match // match: 1
+      case RNil   => concatenateAll(acc, RNil, RNil)                         // fn call: O(concatenateAll)
+      case h :: t => flatMap1_(t, f(h).reverse :: acc)                       // fn call: 1, O(f), reverse: O(n), :: O(1) --> O(n) + O(f)
 
 //    flatMap_(this, RNil)
 //    this.reverse.foldLeft(RNil: RList[S])((acc, h) => f(h) ++ acc)
     flatMap1_(this, RNil)
   }
+
+
+
 
   def filter(pred: T => Boolean): RList[T] = {
     @tailrec
@@ -376,23 +388,49 @@ sealed abstract class RList[+T] {
     import math.Ordering.Implicits.infixOrderingOps
 
     @tailrec
-    def mergeTR(l: RList[S], r: RList[S], acc: RList[S]): RList[S] = (l, r) match
-      case (a :: tl, b :: tr) => if a <= b then mergeTR(tl, r, a :: acc) else mergeTR(l, tr, b :: acc)
-      case (l, RNil)          => acc.reverse ++ l
-      case (RNil, r)          => acc.reverse ++ r
+    def mergeSorted(l: RList[S], r: RList[S], acc: RList[S]): RList[S] =
+      (l, r) match
+        case (a :: tl, b :: tr) => if a <= b then mergeSorted(tl, r, a :: acc) else mergeSorted(l, tr, b :: acc)
+        case (l, RNil)          => acc.reverse ++ l
+        case (RNil, r)          => acc.reverse ++ r
 
-    def mergeSort_(lst: RList[S], k: RList[S] => RList[S]): RList[S] =
+//    def mergeSort_(lst: RList[S], k: RList[S] => RList[S]): RList[S] =
+//      if lst.length < 2 then
+//        k(lst)
+//      else
+//        val (l, r) = lst.splitAt(lst.length / 2)
+//        mergeSort_(l, al => mergeSort_(r, ar => k(mergeTR(al, ar, RNil))))
+
+    // continuations
+    // k1 = identity
+    // k2 = ar => k(mergeTR(al, ar, RNil))
+    // k3 = al => mergeSort_(r, ar => k(mergeTR(al, ar, RNil)))
+    //    = al => mergeSort_(r, k2)
+
+    type FlatCont[S] = RList[Either[RList[S], RList[S]]]
+
+    def evalK(k: FlatCont[S]): RList[S] => RList[S] = k match
+      case RNil            => identity
+      case Right(al) :: k0 => ar => evalK(k0)(mergeSorted(al, ar, RNil))
+      case Left(r)   :: k0 => al => mergeSort2_(r, Right(al) :: k0)
+
+    @tailrec
+    def mergeSort2_(lst: RList[S], k: FlatCont[S]): RList[S] =
       if lst.length < 2 then
-        k(lst)
+        evalK(k)(lst)
       else
         val (l, r) = lst.splitAt(lst.length / 2)
-        mergeSort_(l, al => mergeSort_(r, ar => k(mergeTR(al, ar, RNil))))
+        mergeSort2_(l, Left(r) :: k)
 
-    mergeSort_(this, identity)
+
+    mergeSort2_(this, RNil)
+
+    // data structure
   }
-
-
-
+  //  enum FlatCont1[+S]:
+  //    case K1
+  //    case K2(al: RList[S], k: FlatCont1[S])
+  //    case K3(r: RList[S], k: FlatCont1[S])
 
 
 
