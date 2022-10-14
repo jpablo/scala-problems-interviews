@@ -2,27 +2,23 @@ package puzzles
 
 
 
-def insert [A] (a: A, i: Int) (ls: List[A]): List[A] =
-  val (before, after) = ls.splitAt(i)
-  before ++ (a :: after)
 
-
-def insertAll [A] (a: A) (ls: List[A]): List[List[A]] =
-  for i <- (0 to ls.length).toList yield
-    insert (a, i) (ls)
-
-
-def permutations [A] (input: List[A]): List[List[A]] =
-  input match
-    case Nil => List(List())
-    case h :: t => permutations(t) flatMap insertAll(h)
+def permutations[A]: List[A] => List[List[A]] =
+  case Nil => List(List())
+  case h :: t => 
+    for 
+      pt <- permutations(t)
+      is <- pt.indices.inclusive.map(pt.splitAt).map { case (a, b) => a ++ (h :: b) }
+    yield
+      is
   
 
 object Test extends App:
   println {
     // permutations(List())
     // permutations(List('a'))
-     permutations(List('a', 'b'))
-    // permutations(List('a', 'b', 'c'))
+    //  permutations(List('a', 'b'))
+    permutations(List('a', 'b', 'c'))
     // permutations(List('a', 'b', 'c', 'd'))
   }
+  // permutations(List(2, 3, 4, 5)).map(l => l.mkString(",")).foreach(println)

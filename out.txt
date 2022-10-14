@@ -1,0 +1,20 @@
+[info] welcome to sbt 1.5.5 (Homebrew Java 17.0.3)
+[info] loading global plugins from /Users/jpablo/.sbt/1.0/plugins
+[info] loading settings for project scala-problems-interviews-build-build from metals.sbt ...
+[info] loading project definition from /Users/jpablo/proyectos/courses/scala-problems-interviews/project/project
+[info] loading settings for project scala-problems-interviews-build from metals.sbt ...
+[info] loading project definition from /Users/jpablo/proyectos/courses/scala-problems-interviews/project
+[success] Generated .bloop/scala-problems-interviews-build.json
+[success] Total time: 0 s, completed Sep 21, 2022, 6:06:04 PM
+[info] loading settings for project scala-problems-interviews from build.sbt ...
+[info] set current project to scala-problems-interviews (in build file:/Users/jpablo/proyectos/courses/scala-problems-interviews/)
+[info] running (fork) puzzles.runAnagrams 
+List((HashMap(e -> 1, x -> 1, n -> 1, u -> 2, i -> 1, l -> 2, r -> 1, z -> 1),List(Cat)), (HashMap(e -> 1, x -> 1, n -> 1, u -> 2, i -> 1, l -> 2, r -> 1, z -> 1),List(Dog)), (HashMap(e -> 1, x -> 1, n -> 1, u -> 2, i -> 1, l -> 2, r -> 1, z -> 1),List(Lin)), (HashMap(e -> 1, x -> 1, n -> 1, u -> 2, i -> 1, l -> 2, r -> 1, z -> 1),List(Linux)), (HashMap(e -> 1, x -> 1, n -> 1, u -> 2, i -> 1, l -> 2, r -> 1, z -> 1),List(nil)), (HashMap(e -> 1, x -> 1, n -> 1, u -> 2, i -> 1, l -> 2, r -> 1, z -> 1),List(null)), (HashMap(e -> 1, x -> 1, n -> 1, u -> 2, i -> 1, l -> 2, r -> 1, z -> 1),List(Rex)), (HashMap(e -> 1, x -> 1, n -> 1, u -> 2, i -> 1, l -> 2, r -> 1, z -> 1),List(rulez)), (HashMap(e -> 1, x -> 1, n -> 1, u -> 2, i -> 1, l -> 2, r -> 1, z -> 1),List(Uzi)), (HashMap(e -> 1, x -> 1, n -> 1, u -> 2, i -> 1, l -> 2, r -> 1, z -> 1),List(Zulu)))
+List((HashMap(e -> 0, x -> 0, n -> 0, u -> 2, i -> 0, l -> 1, r -> 0, z -> 1),List(Lin, Rex)), (HashMap(e -> 0, x -> 1, n -> 0, u -> 1, i -> 0, l -> 0, r -> 0, z -> 0),List(Lin, rulez)), (HashMap(e -> 1, x -> 1, n -> 0, u -> 0, i -> 0, l -> 0, r -> 1, z -> 0),List(Lin, Zulu)), (HashMap(e -> 0, x -> 0, n -> 0, u -> 2, i -> 0, l -> 1, r -> 0, z -> 1),List(nil, Rex)), (HashMap(e -> 0, x -> 1, n -> 0, u -> 1, i -> 0, l -> 0, r -> 0, z -> 0),List(nil, rulez)), (HashMap(e -> 1, x -> 1, n -> 0, u -> 0, i -> 0, l -> 0, r -> 1, z -> 0),List(nil, Zulu)), (HashMap(e -> 0, x -> 0, n -> 0, u -> 1, i -> 1, l -> 0, r -> 0, z -> 1),List(null, Rex)), (HashMap(e -> 1, x -> 1, n -> 0, u -> 0, i -> 0, l -> 0, r -> 1, z -> 0),List(null, Uzi)), (HashMap(e -> 0, x -> 0, n -> 0, u -> 2, i -> 0, l -> 1, r -> 0, z -> 1),List(Rex, Lin)), (HashMap(e -> 0, x -> 0, n -> 0, u -> 2, i -> 0, l -> 1, r -> 0, z -> 1),List(Rex, nil)), (HashMap(e -> 0, x -> 0, n -> 0, u -> 1, i -> 1, l -> 0, r -> 0, z -> 1),List(Rex, null)), (HashMap(e -> 0, x -> 0, n -> 1, u -> 1, i -> 0, l -> 2, r -> 0, z -> 0),List(Rex, Uzi)), (HashMap(e -> 0, x -> 0, n -> 1, u -> 0, i -> 1, l -> 1, r -> 0, z -> 0),List(Rex, Zulu)), (HashMap(e -> 0, x -> 1, n -> 0, u -> 1, i -> 0, l -> 0, r -> 0, z -> 0),List(rulez, Lin)), (HashMap(e -> 0, x -> 1, n -> 0, u -> 1, i -> 0, l -> 0, r -> 0, z -> 0),List(rulez, nil)), (HashMap(e -> 1, x -> 1, n -> 0, u -> 0, i -> 0, l -> 0, r -> 1, z -> 0),List(Uzi, null)), (HashMap(e -> 0, x -> 0, n -> 1, u -> 1, i -> 0, l -> 2, r -> 0, z -> 0),List(Uzi, Rex)), (HashMap(e -> 1, x -> 1, n -> 0, u -> 0, i -> 0, l -> 0, r -> 1, z -> 0),List(Zulu, Lin)), (HashMap(e -> 1, x -> 1, n -> 0, u -> 0, i -> 0, l -> 0, r -> 1, z -> 0),List(Zulu, nil)), (HashMap(e -> 0, x -> 0, n -> 1, u -> 0, i -> 1, l -> 1, r -> 0, z -> 0),List(Zulu, Rex)))
+List()
+-------------------
+List(Linux, rulez)
+List(rulez, Linux)
+[error] Nonzero exit code returned from runner: 1
+[error] (Compile / runMain) Nonzero exit code returned from runner: 1
+[error] Total time: 1 s, completed Sep 21, 2022, 6:06:05 PM
