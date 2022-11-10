@@ -1,5 +1,6 @@
 package puzzles.leetCode
 
+import scala.language.unsafeNulls
 
  class ListNode(
   var x   : Int = 0, 

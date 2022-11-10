@@ -17,12 +17,12 @@ def maxProfit(prices: Array[Price]): Price = {
 }
 
 def maxProfit2(prices: Array[Price], minPrice: Int = Int.MaxValue, maxProfit: Int = 0, i: Int = 0): Price =
-  if i >= prices.length then maxProfit
+  if i == prices.length then maxProfit
   else 
     val profit = prices(i) - minPrice
-         if profit < 0         then maxProfit2(prices, minPrice = prices(i), maxProfit = maxProfit, i + 1)
-    else if profit > maxProfit then maxProfit2(prices, minPrice = minPrice , maxProfit = profit   , i + 1)
-    else                            maxProfit2(prices, minPrice = minPrice , maxProfit = maxProfit, i + 1)
+         if profit < 0         then maxProfit2(prices, prices(i), maxProfit, i + 1)
+    else if profit > maxProfit then maxProfit2(prices, minPrice , profit   , i + 1)
+    else                            maxProfit2(prices, minPrice , maxProfit, i + 1)
 
 
 

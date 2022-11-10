@@ -1,6 +1,7 @@
 package puzzles.leetCode.medium
 
 import scala.annotation.tailrec
+import scala.language.unsafeNulls
 
 object LongestPalindromicSubstring extends App {
 

@@ -1,5 +1,7 @@
 package systemDesign
 
+import scala.language.unsafeNulls
+
 class ConsistentHashing(_initialNodes: Int) {
   type Key = Int
   type Node = Int

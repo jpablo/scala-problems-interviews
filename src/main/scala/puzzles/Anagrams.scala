@@ -1,5 +1,6 @@
 package puzzles
 
+import scala.language.unsafeNulls
 
 val dictionary = List(
   // ----

@@ -1,5 +1,7 @@
 package puzzles.leetCode
 
+import scala.language.unsafeNulls
+
 def hasCycle(head: ListNode): Boolean = {
   var nodes = Set.empty[ListNode]
   var cycle = false

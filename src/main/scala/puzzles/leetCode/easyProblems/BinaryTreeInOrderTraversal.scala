@@ -4,26 +4,17 @@ import scala.annotation.tailrec
 
 
 
-// Definition for a binary tree node.
-
-class TreeNode(_value: Int = 0, _left: TreeNode = null, _right: TreeNode = null) {
-  var value: Int = _value
-  var left: TreeNode = _left
-  var right: TreeNode = _right
-}
-
-
 /**
   * preorder: root, left, right
   */
 def preorderTraversal(root: TreeNode): List[Int] = {
 
   @tailrec
-  def go(root: TreeNode, acc: List[Int], stack: List[TreeNode]): List[Int] =
+  def go(root: TreeNode | Null, acc: List[Int], stack: List[TreeNode | Null]): List[Int] =
     (root, stack) match {
-      case (null, Nil   ) => acc                  // (a) end of tree
-      case (null, r :: t) => go(r, acc, t)        // (b) leaf node
-      case _              => go(root.left, root.value :: acc, root.right :: stack) // (c) branch node: read and use value
+      case (null, Nil   )        => acc                  // (a) end of tree
+      case (null, r :: t)        => go(r, acc, t)        // (b) leaf node
+      case (nnRoot: TreeNode, _) => go(nnRoot.left, nnRoot.value :: acc, nnRoot.right :: stack) // (c) branch node: read and use value
     }
 
   val values = go(root, List.empty, List.empty)
@@ -37,11 +28,11 @@ def preorderTraversal(root: TreeNode): List[Int] = {
 def inorderTraversal(root: TreeNode): List[Int] = {
 
   @tailrec
-  def go(root: TreeNode, acc: List[Int], stack: List[(Int, TreeNode)]): List[Int] =
+  def go(root: TreeNode | Null, acc: List[Int], stack: List[(Int, TreeNode | Null)]): List[Int] =
     (root, stack) match {
       case (null, Nil)             => acc  // (a)
       case (null, (value, r) :: t) => go(r, value :: acc, t)  // (b) leaf node: use value
-      case _                       => go(root.left, acc, (root.value, root.right) :: stack) // (c) branch: read value (and store it)
+      case (nnRoot: TreeNode, _)   => go(nnRoot.left, acc, (nnRoot.value, nnRoot.right) :: stack) // (c) branch: read value (and store it)
     }
     
   val values = go(root, List.empty, List.empty)
@@ -54,16 +45,7 @@ def inorderTraversal(root: TreeNode): List[Int] = {
   * postorder: left, right, root
   */
 def postorderTraversal(root: TreeNode): List[Int] = {
-
-
-  @tailrec
-  def go(root: TreeNode, acc: List[Int], stack: List[(Int, TreeNode)]): List[Int] =
-    (root, stack) match {
-      case (null, Nil)             => acc  // (a)
-      case (null, (value, r) :: t) => go(r, value :: acc, t)  // (b) leaf node: use value
-      case _                       => go(root.left, acc, (root.value, root.right) :: stack) // (c) branch: read value (and store it)
-    }
-    
-  val values = go(root, List.empty, List.empty)
-  values
+  ???
 }
+
+

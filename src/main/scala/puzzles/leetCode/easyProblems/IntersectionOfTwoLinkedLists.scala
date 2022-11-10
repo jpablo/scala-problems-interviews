@@ -2,6 +2,8 @@ package puzzles.leetCode
 
 import scala.annotation.tailrec
 
+import scala.language.unsafeNulls
+
 // 1. Go to the last node in both lists
 // 2. go backward one at ah time in both lists
 // 3  The moment the elements are different, we found the divergence

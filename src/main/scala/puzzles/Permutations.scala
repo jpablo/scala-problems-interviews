@@ -1,6 +1,8 @@
 package puzzles
 
 
+def toFunc[A](f: List[A]): Int => A = 
+    f
 
 
 def permutations[A]: List[A] => List[List[A]] =
@@ -13,12 +15,15 @@ def permutations[A]: List[A] => List[List[A]] =
       is
   
 
-object Test extends App:
+
+@main 
+def permutationsMain =
   println {
     // permutations(List())
     // permutations(List('a'))
     //  permutations(List('a', 'b'))
-    permutations(List('a', 'b', 'c'))
+    // permutations(List('a', 'b', 'c'))
+    // permutations(List(1, 2, 3))
     // permutations(List('a', 'b', 'c', 'd'))
   }
-  // permutations(List(2, 3, 4, 5)).map(l => l.mkString(",")).foreach(println)
+  permutations(List(1,2,3)).map(l => l.mkString(",")).sorted.foreach(println)

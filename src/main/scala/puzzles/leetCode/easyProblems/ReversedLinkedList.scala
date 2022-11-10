@@ -1,8 +1,7 @@
 package puzzles.leetCode
 
 import scala.annotation.tailrec
-
-
+import scala.language.unsafeNulls
 
 def reverseList0(head: ListNode): ListNode = {
   def go(head: ListNode, acc: ListNode): ListNode =

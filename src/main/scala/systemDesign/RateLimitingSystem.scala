@@ -1,24 +1,24 @@
 package systemDesign
 
+import scala.language.unsafeNulls
 import zio.json.*
-import scala.collection.mutable
+import scala.collection.mutable.Queue
 
-class RateLimiter(_n: Int, _t: Int) {
+class RateLimiter(_n: Int, _t: Int):
+
   type TimeStamp = Int
-  val queue: mutable.Queue[TimeStamp] = mutable.Queue.empty
+  
+  val queue = Queue.empty[TimeStamp]
 
-  def shouldAllow(current: TimeStamp): Boolean = {
-    println(queue)
+  def shouldAllow(current: TimeStamp): Boolean =
     while (queue.nonEmpty && queue.head <= current - _t)
       queue.dequeue
-    if (queue.size < _n) {
+    if queue.size < _n then
       queue += current
       true
-    } else
+    else
       false
-  }
-}
-
+   
 /**
  * Your RateLimiter object will be instantiated and called as such:
  * var obj = new RateLimiter(n, t)
@@ -37,22 +37,24 @@ class RateLimiter(_n: Int, _t: Int) {
 
   val input = """["RateLimiter","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow","shouldAllow"]"""
     .fromJson[List[Instructions]].right.get
-  
+
   val data = """[[16,12],[38],[42],[48],[50],[50],[50],[50],[50],[50],[50],[50],[50],[50],[50],[50],[50],[50],[50],[50]]"""
     .fromJson[List[List[Int]]].right.get
 
   val expected = """[false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false]"""
     .fromJson[List[Boolean]].right.get
 
+    
+    
+
   var rateLimiter: RateLimiter = null
 
   input.zip(data).zip(expected).foreach { case ((i, d), e) =>
-    val out = 
-      i match
-        case Instructions.RateLimiter => 
-          rateLimiter = new RateLimiter(d(0), d(1))
-        case Instructions.shouldAllow =>
-          rateLimiter.shouldAllow(d(0))
+    val out = i match
+      case Instructions.RateLimiter => 
+        rateLimiter = new RateLimiter(d(0), d(1))
+      case Instructions.shouldAllow =>
+        rateLimiter.shouldAllow(d(0))
     
     println((i, d, out, e))
   }

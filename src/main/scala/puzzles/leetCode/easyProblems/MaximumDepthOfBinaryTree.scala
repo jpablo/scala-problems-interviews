@@ -1,7 +1,7 @@
 package puzzles.leetCode
 
 import scala.annotation.tailrec
-
+import scala.language.unsafeNulls
 
 def maxDepth(root: TreeNode): Int = {
   

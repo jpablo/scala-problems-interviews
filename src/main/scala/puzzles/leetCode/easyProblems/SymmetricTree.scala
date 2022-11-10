@@ -1,7 +1,7 @@
 package puzzles.leetCode
 
 import scala.collection.mutable.Queue
-
+import scala.language.unsafeNulls
 
 
 def isSymmetric(root: TreeNode): Boolean = {

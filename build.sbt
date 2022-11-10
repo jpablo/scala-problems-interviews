@@ -14,3 +14,5 @@ fork := true
 outputStrategy := Some(StdoutOutput)
 
 connectInput := true
+
+scalacOptions ++= Seq("-Yexplicit-nulls")

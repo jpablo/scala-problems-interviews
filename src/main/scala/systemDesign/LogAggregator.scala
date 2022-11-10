@@ -1,9 +1,11 @@
 package systemDesign
 import scala.collection.mutable
 
+import scala.language.unsafeNulls
+
 type LogId = Int
 type ServiceId = Int
-type MachineId = Int
+// type MachineId = Int
 
 class LogAggregator(_machines: Int, _services: Int) {
 

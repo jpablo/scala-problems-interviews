@@ -1,9 +1,10 @@
 package puzzles.leetCode
 
 
-def sortedArrayToBST (nums: Array[Int]): TreeNode = {
+
+def sortedArrayToBST (nums: Array[Int]): TreeNode | Null = {
   // Non-tail recursive version
-  def go0 (l: Int, r: Int): TreeNode = {
+  def go0 (l: Int, r: Int): TreeNode | Null = {
     // 0 <= l <= r <= nums.length
     val mid = (l + r) / 2
     if (l > r || mid < 0 || mid >= nums.length) null
