@@ -1,4 +1,4 @@
-package puzzles.leetCode
+package puzzles.leetCode.easyProblems
 
 import scala.annotation.tailrec
 import scala.language.unsafeNulls
