@@ -19,26 +19,26 @@ def split(head: ListNode): (ListNode, ListNode) = {
   (dummy.next, right)
 }
 
-def merge(a: ListNode, b: ListNode): ListNode =
+def merge0(a: ListNode, b: ListNode): ListNode =
   (a, b) match {
     case (null, b) => b
     case (a, null) => a
     case (a, b) if a.x < b.x =>
-      a.next = merge(a.next, b)
+      a.next = merge0(a.next, b)
       a
     case _ => 
-      b.next = merge(b.next, a)
+      b.next = merge0(b.next, a)
       b
   }
 
 
-// using a variation of merge sort
+// using a variation of merge0 sort
 def sortList(head: ListNode): ListNode = {
   if (head == null || head.next == null)
     head
   else {
     val (left, right) = split(head)
-    merge(sortList(left), sortList(right))
+    merge0(sortList(left), sortList(right))
   }
 }
 

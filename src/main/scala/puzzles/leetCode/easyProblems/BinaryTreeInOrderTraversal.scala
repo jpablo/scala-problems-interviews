@@ -10,14 +10,14 @@ import scala.annotation.tailrec
 def preorderTraversal(root: TreeNode): List[Int] = {
 
   @tailrec
-  def go(root: TreeNode | Null, acc: List[Int], stack: List[TreeNode | Null]): List[Int] =
-    (root, stack) match {
-      case (null, Nil   )        => acc                  // (a) end of tree
-      case (null, r :: t)        => go(r, acc, t)        // (b) leaf node
-      case (nnRoot: TreeNode, _) => go(nnRoot.left, nnRoot.value :: acc, nnRoot.right :: stack) // (c) branch node: read and use value
+  def loop[B](root: TreeNode | Null, pending: List[TreeNode | Null], result: B, f: (Int, B) => B): B =
+    (root, pending) match {
+      case (null, Nil   )        => result                  // (a) end of tree
+      case (null, r :: t)        => loop(r, t, result, f)      // (b) leaf node
+      case (nnRoot: TreeNode, _) => loop(nnRoot.left, nnRoot.right :: pending, f(nnRoot.value, result), f) // (c) branch node: read and use value
     }
 
-  val values = go(root, List.empty, List.empty)
+  val values = loop(root, List.empty, List.empty[Int], _ :: _)
   values.reverse
 }
 
@@ -28,14 +28,14 @@ def preorderTraversal(root: TreeNode): List[Int] = {
 def inorderTraversal(root: TreeNode): List[Int] = {
 
   @tailrec
-  def go(root: TreeNode | Null, acc: List[Int], stack: List[(Int, TreeNode | Null)]): List[Int] =
-    (root, stack) match {
-      case (null, Nil)             => acc  // (a)
-      case (null, (value, r) :: t) => go(r, value :: acc, t)  // (b) leaf node: use value
-      case (nnRoot: TreeNode, _)   => go(nnRoot.left, acc, (nnRoot.value, nnRoot.right) :: stack) // (c) branch: read value (and store it)
+  def loop(root: TreeNode | Null, pending: List[(Int, TreeNode | Null)], result: List[Int]): List[Int] =
+    (root, pending) match {
+      case (null, Nil)             => result  // (a)
+      case (null, (value, r) :: t) => loop(r, t, value :: result)  // (b) leaf node: use value
+      case (nnRoot: TreeNode, _)   => loop(nnRoot.left, (nnRoot.value, nnRoot.right) :: pending, result) // (c) branch: read value (and store it)
     }
     
-  val values = go(root, List.empty, List.empty)
+  val values = loop(root, List.empty, List.empty)
   values.reverse
 }
 

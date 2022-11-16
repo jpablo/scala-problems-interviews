@@ -3,12 +3,12 @@ package puzzles
 import scala.annotation.tailrec
 
 def slowGCD (a: Int, b: Int) =
-  @tailrec def go(d: Int): Int =
+  @tailrec def loop(d: Int): Int =
     if d <= 1 then 1
     else if a % d == 0 && b % d == 0
     then d
-    else go(d - 1)
-  go(math.min(a, b))
+    else loop(d - 1)
+  loop(math.min(a, b))
 
 @tailrec
 def gcd2 (a: Int, b: Int, count: Int): Int =

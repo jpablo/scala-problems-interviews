@@ -29,7 +29,7 @@ def balanced(input: String, matches: Map[String, String]): Boolean = {
 
 
   @tailrec
-  def go(starts: List[String], remaining: List[String]): Boolean = {
+  def loop(starts: List[String], remaining: List[String]): Boolean = {
     remaining match {
       case token :: rest =>
         if (isClosing(token)) {
@@ -37,9 +37,9 @@ def balanced(input: String, matches: Map[String, String]): Boolean = {
           if (!validPair(start, token))
             false
           else
-            go(starts, remaining)
+            loop(starts, remaining)
         } else
-          go(token :: starts, rest)
+          loop(token :: starts, rest)
       case Nil =>
         starts.nonEmpty
     }
@@ -67,7 +67,7 @@ def balanced(input: String, matches: Map[String, String]): Boolean = {
   if input.isEmpty then 
     true
   else
-    go(List.empty, input.split(' ').toList)
+    loop(List.empty, input.split(' ').toList)
   }
 
 

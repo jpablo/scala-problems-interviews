@@ -1,10 +1,6 @@
 package puzzles
 
 
-def toFunc[A](f: List[A]): Int => A = 
-    f
-
-
 def permutations[A]: List[A] => List[List[A]] =
   case Nil => List(List())
   case h :: t => 
