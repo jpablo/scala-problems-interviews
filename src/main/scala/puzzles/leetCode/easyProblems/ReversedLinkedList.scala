@@ -24,15 +24,20 @@ def reverseList1(head0: ListNode): ListNode =
   }
   acc
 
+/* 
+Idea
+  - reverse `next` pointer in place
+
+ */
 def reverseList(head: ListNode): ListNode =
-  def go(head: ListNode, acc: ListNode): ListNode =
+  def loop(head: ListNode, result: ListNode): ListNode =
     if (head == null)
-      acc
+      result
     else
       val next = head.next
-      head.next = acc
-      go(head = next, acc = head)
-  go(head, null)
+      head.next = result
+      loop(head = next, result = head)
+  loop(head, null)
 
 
 @main def mainReversedLL =

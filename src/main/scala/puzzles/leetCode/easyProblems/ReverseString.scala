@@ -10,3 +10,7 @@ def reverse(s: Array[Char]) =
     i += 1
   }
 
+@main def main344 =
+  val a = "hello".toCharArray.nn
+  reverse(a)
+  println(a.toList)

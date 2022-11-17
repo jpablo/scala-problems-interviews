@@ -11,7 +11,7 @@ def reverseBits(x: Long): Long = {
     // ret += just sets the bit (it's like AND)
     ret += (n & 1) << power
     // drop right-most bit (divide by 2)
-    n = n >> 1
+    n >>= 1
     power -= 1
   }
   ret
