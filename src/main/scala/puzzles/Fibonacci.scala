@@ -13,11 +13,20 @@ import collection.mutable.Map as MMap
 // f n = f (n - 1) + f (n - 2)
 
 
+def fibSpec(f: Int => Int, n: Int) = 
+  assert(n >= 1)
+  if n == 1 || n == 2 then 
+    f(n) == 1
+  else
+    f(n + 2) == f(n) + f(n + 1)
+
+
 // naive recursive
 def fib0(n: Int): Int =
   if n <= 1 then 
     n
   else
+    // List(1, 2).map(m => fib0(n - m)).sum
     fib0(n - 1) + fib0(n - 2)
 
   // f 7 =

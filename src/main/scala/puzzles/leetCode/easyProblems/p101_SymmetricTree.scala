@@ -1,6 +1,6 @@
 package puzzles.leetCode
 
-import scala.collection.mutable.Queue
+import scala.collection.mutable
 import scala.language.unsafeNulls
 
 
@@ -8,23 +8,23 @@ def isSymmetric(root: TreeNode): Boolean = {
   root == null || isMirror(root.left, root.right)
 }
 
-def isMirror (left: TreeNode, right: TreeNode): Boolean = {    
+def isMirror (left: TreeNode, right: TreeNode): Boolean = {
   // (l, null)
   // (null, r)
   // (null, null)
   // (l, r)
   (left == null && right == null) ||
   (
-    left != null && 
+    left != null &&
     right != null &&
-    left.value == right.value && 
+    left.value == right.value &&
     isMirror(left.left, right.right) &&
-    isMirror(left.right, right.left)       
+    isMirror(left.right, right.left)
   )
 }
 
 def isSymmetric2 (root: TreeNode): Boolean =
-  val q = Queue.empty[TreeNode]
+  val q = mutable.Queue.empty[TreeNode]
   q.enqueue(root)
   q.enqueue(root)
   while q.nonEmpty do
@@ -35,10 +35,10 @@ def isSymmetric2 (root: TreeNode): Boolean =
     else if t1.value != t2.value     then return false
     else // q ++ [t1.left, t2.right, t1.right, t2.left]
       q.enqueueAll(List(t1.left, t2.right, t1.right, t2.left))
-  true  
+  true
 
 
-val example1 = 
+val example1 =
   new TreeNode(1,
     new TreeNode(2, new TreeNode(3), new TreeNode(4)),
     new TreeNode(2, new TreeNode(4), new TreeNode(3)),

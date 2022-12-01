@@ -5,7 +5,7 @@ package puzzles.leetCode.medium
 // https://leetcode.com/problems/lru-cache/
 
 
-import collection.mutable.{LinkedHashMap, Map}
+import collection.mutable.LinkedHashMap
 
 class LRUCache(_capacity: Int) {
   type Key = Int
