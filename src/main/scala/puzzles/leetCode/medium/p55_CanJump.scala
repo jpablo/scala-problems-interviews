@@ -14,7 +14,7 @@ Idea:
   - 
  */
 
-def canJump(nums: Array[Int]): Boolean = {
+def canJump1(nums: Array[Int]): Boolean = {
   var goal = nums.indices.last
   for (i <- nums.indices.reverse)
     if (i + nums(i) >= goal)

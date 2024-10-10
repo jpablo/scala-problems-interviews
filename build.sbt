@@ -4,7 +4,7 @@ name := "scala-problems-interviews"
 
 version := "0.1"
 
-scalaVersion := "3.2.1"
+scalaVersion := "3.5.0"
 
 libraryDependencies ++= Seq(
   "io.github.hughsimpson" %% "scalameter" % "0.22.1",

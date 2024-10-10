@@ -1,5 +1,7 @@
 package puzzles.leetCode.medium
 
+import scala.collection.mutable
+
 
 // 150
 // https://leetcode.com/problems/evaluate-reverse-polish-notation/
@@ -12,7 +14,7 @@ def binOp: Map[String, (Int, Int) => Int] = Map(
 )
 
 def evalRPN(tokens: Array[String]): Int = {
-  var stack = collection.mutable.ArrayBuffer.empty[Int]
+  var stack = mutable.ArrayBuffer.empty[Int]
   for (t <- tokens) {
     if (t.length > 1 || t(0).isDigit)
       t.toInt +=: stack
