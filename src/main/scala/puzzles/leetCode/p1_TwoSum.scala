@@ -47,22 +47,21 @@ object Solution1 extends App {
   }
 
 
-
   // Single pass.
   // The `indices` Map is updated on each element.
   // Early return.
   def twoSum1(nums: Array[Int], target: Int): Array[Index] =
-    val visited = mutable.Map.empty[Int, Index]
+    //    val visited = mutable.Map.empty[Int, Index]
     @tailrec
-    def loop(i: Index): Array[Index] =
-      // is the complement present in nums? {
-      val complement = target - nums(i)
+    def loop(i: Index, visited: Map[Int, Index]): Array[Index] =
+      val value = nums(i)
+      // is the complement present in nums?
+      val complement = target - value
       visited.get(complement) match
-        case Some(j) => Array(j, i)
-        case None =>
-          visited += (nums(i) -> i)
-          loop(i + 1)
-    loop(0)
+        case Some(j) => Array(j, i) // found it, stop
+        case None => loop(i + 1, visited + (value -> i))
+
+    loop(0, Map.empty)
 
 
   // Single pass, early return (only the first solution is calculated)
@@ -84,20 +83,22 @@ object Solution1 extends App {
 
 
   val examples = List(
-    (Array(-10,7,19,15), 9) -> Array(0, 2),
-//    (Array(3, 3), 6)        -> Array(0, 1),
-//    (Array(2,7,11,15), 9)   -> Array(0, 1),
-//    (Array(3, 2, 4), 6)     -> Array(1, 2),
+    (Array(-10, 7, 19, 15), 9) -> Array(0, 2),
+    (Array(3, 3), 6) -> Array(0, 1),
+    (Array(2, 7, 11, 15), 9) -> Array(0, 1),
+    (Array(3, 2, 4), 6) -> Array(1, 2),
   )
 
   import upickle.default.writeJs
 
   for ((input, target), expected) <- examples do
-    val result = twoSum(input, target)
-    println("--------")
+    //    val result = twoSum(input, target)
+    val result = twoSum1(input, target)
+//    println("--------")
 //    println(writeJs(result))
 //    println(result.find(_.nonEmpty).toList.flatMap(_.toList))
-    assert(result.find(_.nonEmpty).toList.flatMap(_.toList) == expected.toList, s"${result.toList} != ${expected.toList}")
+//    assert(result.find(_.nonEmpty).toList.flatMap(_.toList) == expected.toList, s"${result.toList} != ${expected.toList}")
+    assert(result.toList == expected.toList, s"${result.toList} != ${expected.toList}")
 
   println("Ok")
 }
