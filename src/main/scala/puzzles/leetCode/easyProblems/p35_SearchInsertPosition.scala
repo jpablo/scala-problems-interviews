@@ -30,12 +30,11 @@ object p35_SearchInsertPosition extends App {
           case 0  => mid
           case -1 => loop(mid + 1, b)
           case 1  => loop(a, mid - 1)
-
     loop(0, nums.length - 1)
 
 
-  assert(searchInsert(Array(1, 3, 5, 6), 5) == 2) // 2
-  assert(searchInsert(Array(1, 3, 5, 6), 2) == 1) // 1
-  assert(searchInsert(Array(1, 3, 5, 6), 7) == 4) // 4
+  assert(searchInsert(Array(1, 3, 5, 6), 5) == 2)
+  assert(searchInsert(Array(1, 3, 5, 6), 2) == 1)
+  assert(searchInsert(Array(1, 3, 5, 6), 7) == 4)
 
 }
