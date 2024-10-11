@@ -9,7 +9,8 @@ scalaVersion := "3.5.0"
 libraryDependencies ++= Seq(
   "io.github.hughsimpson" %% "scalameter" % "0.22.1",
   "dev.zio" %% "zio-prelude" % zioPreludeVersion,
-  "dev.zio" %% "zio-json" % "0.3.0"
+  "dev.zio" %% "zio-json" % "0.3.0",
+  "com.lihaoyi" %% "upickle" % "4.0.0",
 )
 
 fork := true

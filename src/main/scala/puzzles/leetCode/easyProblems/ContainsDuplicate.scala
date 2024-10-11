@@ -1,11 +1,10 @@
-package puzzles.leetCode
-
+package puzzles.leetCode.easyProblems
 
 def containsDuplicate(nums: Array[Int]): Boolean =
-  nums.groupBy(identity).find { case (_, is) => is.length > 1}.nonEmpty
+  nums.groupBy(identity).exists { case (_, is) => is.length > 1 }
 
 
-@main def mainDuplicate =
+@main def mainDuplicate(): Unit =
   println(containsDuplicate(Array(1,2,3,1)))
   println(containsDuplicate(Array(1,2,3,4)))
 
