@@ -19,4 +19,7 @@ outputStrategy := Some(StdoutOutput)
 
 connectInput := true
 
-scalacOptions ++= Seq("-Yexplicit-nulls")
+scalacOptions ++= Seq(
+  "-Yexplicit-nulls",
+  "-language:experimental.namedTuples",
+)
