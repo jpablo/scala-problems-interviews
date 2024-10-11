@@ -16,39 +16,46 @@ import scala.annotation.tailrec
 val matches = Map(
   '(' -> ')',
   '{' -> '}',
-  '[' -> ']',
+  '[' -> ']'
 )
-
 
 // Ideas:
 // - Use a Stack
 // - Use helper functions with significant names (to help reading)
 // - Decision tables (via simultaneous pattern matching)
-def isValid(input: String): Boolean = {
-  
-  def isStart(t: Char)           = matches.keySet contains t
-  def validPair(p: (Char, Char)) = matches.toSet  contains p
 
+def isValid(input: String): Boolean = {
+
+  def isStart(t: Char) = matches.keySet contains t
+
+  def isValidPair(p: (Char, Char)) = matches.toSet contains p
+
+  // Notes: tokens and previousTokens are in opposite order!
   @tailrec
-  def loop(tokens: List[Char], stack: List[Char] = List.empty): Boolean = (tokens, stack) match {
-    case (Nil, Nil)         => true
-    case (Nil, _ :: _)      => false
-    case (t :: ts, Nil)     => loop(ts, List(t))
-    case (t :: ts, s :: ss) =>
-      if (isStart(t)) 
-        loop(ts, t :: s :: ss)
-      else if (validPair(s -> t)) // t is the correct end
-        loop(ts, ss)              // continue with next token
-      else // t is the incorrect end
-        false
-    }
+  def loop(previousTokens: List[Char], tokens: List[Char]): Boolean =
+    (previousTokens, tokens) match
+      case (Nil, Nil) => true
+      case (_, Nil)   => false
+
+      case (Nil, nextToken :: ts) => loop(nextToken :: Nil, ts) // start
+
+      case (prev :: pt, next :: tt) =>
+        // 3 cases:
+        if isStart(next) then
+          loop(next :: previousTokens, tt)
+        // next is not a start
+        else if isValidPair(prev -> next) then
+          loop(pt, tt) // remove the pair and continue
+        else
+          false
+
   if (input.isEmpty)
     true
   else
-    loop(input.toList)
+    loop(Nil, input.toList)
 }
 
-@main def main20 =
+@main def main20(): Unit =
   assert(isValid("()"))
   assert(isValid("()[]{}"))
   assert(!isValid("(]"))
