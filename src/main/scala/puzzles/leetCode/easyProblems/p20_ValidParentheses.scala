@@ -24,6 +24,8 @@ val matches = Map(
 // - Use helper functions with significant names (to help reading)
 // - Decision tables (via simultaneous pattern matching)
 
+// Why a stack: "The most recently opened parenthesis must be closed first"
+
 def isValid(input: String): Boolean = {
 
   def isStart(t: Char) = matches.keySet contains t
