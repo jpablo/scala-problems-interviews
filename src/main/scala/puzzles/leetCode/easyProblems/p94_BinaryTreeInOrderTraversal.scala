@@ -1,6 +1,8 @@
 package puzzles.leetCode.easyProblems
 
-import puzzles.leetCode.TreeNode
+import puzzles.leetCode.TreeNodeGeneric
+import puzzles.leetCode.TreeNodeGeneric.node
+
 import scala.annotation.tailrec
 
 // 94
@@ -10,68 +12,69 @@ import scala.annotation.tailrec
 Given the root of a binary tree, return the inorder traversal of its nodes' values.
  */
 
+type TreeNode = TreeNodeGeneric[Char]
+type Tree = TreeNode | Null
+
 /** preorder: root, left, right
   *
   * Idea:
-  * \- Stack of pending nodes
-  * \- use value when visiting node
+  *   - Stack of pending nodes
+  *   - use value when visiting node
   */
-def preorderTraversal(root: TreeNode): List[Int] = {
+def preorderTraversal(root: TreeNode) =
+  // pending = right branches
   @tailrec
-  def loop[B](root: TreeNode | Null, pending: List[TreeNode | Null], result: B, use: (Int, B) => B): B =
-    (root, pending) match {
-      case (n: TreeNode, _) => loop(n.left, n.right :: pending, use(n.value, result), use)
-      case (null, r :: t)   => loop(r, t, result, use)
-      case (null, Nil)      => result
-    }
+  def loop[B](root: Tree, pending: List[Tree], acc: B, f: (Char, B) => B): B =
+    (root, pending) match
+      case (node: TreeNode, _)  => loop(root = node.left, pending = node.right :: pending, acc = f(node.value, acc), f)
+      case (null, next :: tail) => loop(root = next, pending = tail, acc, f)
+      case (null, Nil)          => acc
 
-  val values = loop(root, List.empty, List.empty[Int], _ :: _)
-  values.reverse
-}
+  loop(root, Nil, Nil, _ :: _).reverse
 
 /** inorder: left, root, right
   *
   * Idea:
   *   - Stack of pending nodes + value
+  *   - use value when taking a node from the stack
   */
-def inorderTraversal(root: TreeNode): List[Int] = {
+def inorderTraversal(root: TreeNode): List[Char] =
   @tailrec
-  def loop[B](root: TreeNode | Null, pending: List[(Int, TreeNode | Null)], result: B, use: (Int, B) => B): B =
-    (root, pending) match {
-      case (n: TreeNode, _)        => loop(n.left, (n.value, n.right) :: pending, result, use)
-      case (null, (value, r) :: t) => loop(r, t, use(value, result), use)
-      case (null, Nil)             => result
-    }
+  def loop[B](root: Tree, pending: List[(Char, Tree)], acc: B, f: (Char, B) => B): B =
+    println(pending)
+    (root, pending) match
+      case (n: TreeNode, _)              => loop(root = n.left, pending = (n.value, n.right) :: pending, acc, f)
+      case (null, (value, next) :: tail) => loop(root = next, pending = tail, acc = f(value, acc), f)
+      case (null, Nil)                   => acc
 
-  val values = loop(root, List.empty, List.empty[Int], _ :: _)
-  values.reverse
-}
+  loop(root, Nil, Nil, _ :: _).reverse
 
-/** postorder: left, right, root
+/** postorder: left, right, root Idea:
+  *   - Stack of pending nodes | value
+  *   - use value when taking a node from the stack
   */
-def postorderTraversal(root: TreeNode): List[Int] = {
+def postorderTraversal(root: TreeNode): List[Char] = {
   @tailrec
-  def loop[B](root: TreeNode | Null, pending: List[Int | TreeNode | Null], result: B, use: (Int, B) => B): B =
-    (root, pending) match {
-      case (n: TreeNode, _) =>
-        loop(n.left, n.right :: n.value :: pending, result, use)
+  def loop[B](root: Tree, pending: List[Char | Tree], acc: B, f: (Char, B) => B): B =
+    (root, pending) match
+      case (n: TreeNode, _) => loop(n.left, n.right :: n.value :: pending, acc, f)
 
-      case (null, h :: t) =>
-        h match
-          case value: Int  => loop(null, t, use(value, result), use)
-          case r: TreeNode => loop(r, t, result, use)
-          case null        => loop(null, t, result, use)
+      case (null, next :: tail) =>
+        next match
+          case value: Char => loop(null, tail, f(value, acc), f)
+          case r: TreeNode => loop(r, tail, acc, f)
+          case null        => loop(null, tail, acc, f)
 
-      case (null, Nil) =>
-        result
-    }
+      case (null, Nil) => acc
 
-  val values = loop(root, List.empty, List.empty[Int], _ :: _)
-  values.reverse
+  loop(root, Nil, Nil, _ :: _).reverse
 }
 
 @main def main94(): Unit =
-  val t = TreeNode(1, null, TreeNode(2, TreeNode(3)))
-  println(preorderTraversal(t))
-  println(inorderTraversal(t))
-  println(postorderTraversal(t))
+  val t = node('a', node('b', node('d'), node('e')), node('c', node('f')))
+//  val result = preorderTraversal(t)
+  val result = inorderTraversal(t)
+  println("------------------")
+  println(result)
+//  println(inorderTraversal(t))
+//  println(postorderTraversal(t))

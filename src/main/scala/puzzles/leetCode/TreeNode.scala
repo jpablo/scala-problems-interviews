@@ -5,11 +5,11 @@ class TreeNode(_value: Int = 0, _left: TreeNode | Null = null, _right: TreeNode 
   var left: TreeNode | Null = _left
   var right: TreeNode | Null = _right
 
-  def toStr[A](a: A | Null) = a match
+  def toStr[A](a: A | Null): String = a match
     case null => "null"
     case _ => a.toString
 
-  override def toString(): String =
+  override def toString: String =
     s"TreeNode($value, ${toStr(left)}, ${toStr(right)})"
 }
 
