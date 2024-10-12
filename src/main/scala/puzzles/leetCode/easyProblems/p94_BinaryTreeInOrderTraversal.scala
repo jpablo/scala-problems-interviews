@@ -26,9 +26,9 @@ def preorderTraversal(root: TreeNode) =
   @tailrec
   def loop[B](root: Tree, pending: List[Tree], acc: B, f: (Char, B) => B): B =
     (root, pending) match
-      case (node: TreeNode, _)  => loop(root = node.left, pending = node.right :: pending, acc = f(node.value, acc), f)
-      case (null, next :: tail) => loop(root = next, pending = tail, acc, f)
-      case (null, Nil)          => acc
+      case (node: TreeNode, _) => loop(root = node.left, pending = node.right :: pending, acc = f(node.value, acc), f)
+      case (null, right :: rr) => loop(root = right, pending = rr, acc, f)
+      case (null, Nil)         => acc
 
   loop(root, Nil, Nil, _ :: _).reverse
 
@@ -43,9 +43,9 @@ def inorderTraversal(root: TreeNode): List[Char] =
   def loop[B](root: Tree, pending: List[(Char, Tree)], acc: B, f: (Char, B) => B): B =
     println(pending)
     (root, pending) match
-      case (n: TreeNode, _)              => loop(root = n.left, pending = (n.value, n.right) :: pending, acc, f)
-      case (null, (value, next) :: tail) => loop(root = next, pending = tail, acc = f(value, acc), f)
-      case (null, Nil)                   => acc
+      case (n: TreeNode, _)             => loop(root = n.left, pending = (n.value, n.right) :: pending, acc, f)
+      case (null, (value, right) :: rr) => loop(root = right, pending = rr, acc = f(value, acc), f)
+      case (null, Nil)                  => acc
 
   loop(root, Nil, Nil, _ :: _).reverse
 
@@ -59,11 +59,11 @@ def postorderTraversal(root: TreeNode): List[Char] = {
     (root, pending) match
       case (n: TreeNode, _) => loop(n.left, n.right :: n.value :: pending, acc, f)
 
-      case (null, next :: tail) =>
-        next match
-          case value: Char => loop(null, tail, f(value, acc), f)
-          case r: TreeNode => loop(r, tail, acc, f)
-          case null        => loop(null, tail, acc, f)
+      case (null, rightOrValue :: rr) =>
+        rightOrValue match
+          case value: Char     => loop(null, rr, f(value, acc), f)
+          case right: TreeNode => loop(root = right, rr, acc, f)
+          case null            => loop(null, rr, acc, f)
 
       case (null, Nil) => acc
 
