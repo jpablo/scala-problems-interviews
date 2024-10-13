@@ -41,7 +41,6 @@ def preorderTraversal(root: TreeNode) =
 def inorderTraversal(root: TreeNode): List[Char] =
   @tailrec
   def loop[B](root: Tree, pending: List[(Char, Tree)], acc: B, f: (Char, B) => B): B =
-    println(pending)
     (root, pending) match
       case (n: TreeNode, _)             => loop(root = n.left, pending = (n.value, n.right) :: pending, acc, f)
       case (null, (value, right) :: rr) => loop(root = right, pending = rr, acc = f(value, acc), f)
