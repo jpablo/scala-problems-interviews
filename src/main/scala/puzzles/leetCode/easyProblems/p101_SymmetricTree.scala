@@ -15,17 +15,16 @@ def isMirror(left: TreeNode, right: TreeNode): Boolean =
     case _                              => isMirror(left.left, right.right) && isMirror(left.right, right.left)
 
 def isSymmetric2(root: TreeNode): Boolean =
-  val q = mutable.Queue.empty[TreeNode]
-  q.enqueue(root)
-  q.enqueue(root)
+  // duplicate root
+  val q = mutable.Queue((root, root))
   while q.nonEmpty do
-    val t1 = q.dequeue // [t1.left]
-    val t2 = q.dequeue // [t2.right]
-    if t1 == null && t2 == null then ()
-    else if t1 == null || t2 == null then return false
-    else if t1.value != t2.value then return false
-    else // q ++ [t1.left, t2.right, t1.right, t2.left]
-      q.enqueueAll(List(t1.left, t2.right, t1.right, t2.left))
+    val (left, right) = q.dequeue
+    (left, right) match
+      case (null, null)                   => ()
+      case (null, _)                      => return false
+      case (_, null)                      => return false
+      case _ if left.value != right.value => return false
+      case _                              => q.enqueueAll(List(left.left -> right.right, left.right -> right.left))
   true
 
 val example1 =
