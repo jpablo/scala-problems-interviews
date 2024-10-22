@@ -45,8 +45,8 @@ def inorderTraversal(root: TreeNode): List[Char] =
     (root, pending) match
       case (n: TreeNode, _) => inorderLoop(root = n.left, pending = n :: pending, acc, f)
 
-      case (null, n :: rr)  => inorderLoop(root = n.right, pending = rr, acc = f(n, acc), f)
-      case (null, Nil)      => acc
+      case (null, n :: rr) => inorderLoop(root = n.right, pending = rr, acc = f(n, acc), f)
+      case (null, Nil)     => acc
 
   inorderLoop(root, pending = Nil, acc = Nil, f = (n, acc) => n.value :: acc).reverse
 
@@ -76,11 +76,24 @@ def postorderTraversal(root: TreeNode): List[Char] =
 
 @main def main94(): Unit =
   val t = node('a', left = node('b', node('d'), node('e')), right = node('c', node('f')))
+  val t2 =
+    node(
+      value = '1',
+      left  = node('2', node('3'), node('4')),
+      right = node('2', node('4'), node('3'))
+    )
 //  println(t.toDOT)
-//  val result = preorderTraversal(t)
+//  val result = preorderTraversal(t2)
 //  val result = inorderTraversal(t)
-  val result = postorderTraversal(t)
+//  val result = postorderTraversal(t)
   println("------------------")
-  println(result)
-//  println(inorderTraversal(t))
-//  println(postorderTraversal(t))
+//  println(result)
+  println("pre")
+  println(preorderTraversal(t2.left.nn))
+  println(preorderTraversal(t2.right.nn))
+  println("in")
+  println(inorderTraversal(t2.left.nn))
+  println(inorderTraversal(t2.right.nn))
+  println("post")
+  println(postorderTraversal(t2.left.nn))
+  println(postorderTraversal(t2.right.nn))
