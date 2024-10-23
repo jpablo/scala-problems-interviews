@@ -47,7 +47,19 @@ def inorderTraversal(root: TreeNode): List[Char] =
       case (null, (right, value) :: tail) => inorderLoop(root = right, pending = tail, acc = f(value, acc), f)
       case (n: TreeNode, _)               => inorderLoop(root = n.left, pending = (n.right, n.value) :: pending, acc, f)
 
-  inorderLoop(root, pending = Nil, acc = Nil, f = (value, acc) => value :: acc).reverse
+  @tailrec
+  def postOrderLoop[B](root: Tree, pending: List[Tree | Char], acc: B, f: (Char, B) => B): B =
+    (root, pending) match
+      case (null, Nil) => acc
+      case (null, p :: tail) =>
+        p match
+          case value: Char     => postOrderLoop(root = null, pending = tail, acc = f(value, acc), f)
+          case right: TreeNode => postOrderLoop(root = right, pending = tail, acc, f)
+          case null            => postOrderLoop(root = null, pending = tail, acc, f)
+
+      case (n: TreeNode, _) => postOrderLoop(root = n.left, pending = n.value :: n.right :: pending, acc, f)
+
+  inorderLoop(root, pending = Nil, acc = Nil, f = _ :: _).reverse
 
 /** postorder: left, right, root
   *
@@ -56,7 +68,7 @@ def inorderTraversal(root: TreeNode): List[Char] =
   *   - use value when taking a node from the stack
   */
 def postorderTraversal(root: TreeNode): List[Char] =
-  type Pending = Char | Tree
+  type Pending = Tree | Char
 
   @tailrec
   def postOrderLoop[B](root: Tree, pending: List[Pending], acc: B, f: (Char, B) => B): B =
@@ -68,7 +80,7 @@ def postorderTraversal(root: TreeNode): List[Char] =
           case value: Char     => postOrderLoop(null, tail, f(value, acc), f)
           case null            => postOrderLoop(null, tail, acc, f)
 
-      case (n: TreeNode, _) => postOrderLoop(root = n.left, pending = n.right :: n.value :: pending, acc = acc, f = f)
+      case (n: TreeNode, _) => postOrderLoop(root = n.left, pending = n.right :: n.value :: pending, acc, f)
 
   postOrderLoop(root, Nil, Nil, _ :: _).reverse
 
