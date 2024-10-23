@@ -14,7 +14,7 @@ case class PreorderData[Value, Accumulated, Pending](
 )
 
 @tailrec
-def preorderLoop[Value, Accumulated, Pending](
+def preorder[Value, Accumulated, Pending](
     root:    Tree[Value],
     pending: List[Pending],
     acc:     Accumulated,
@@ -24,11 +24,10 @@ def preorderLoop[Value, Accumulated, Pending](
   (root, pending) match
     // 1. process node
     case (n: TreeNodeGeneric[_], _) =>
-      preorderLoop(root = n.left, pending = nextPending(n, acc) :: pending, acc = accumulate(n, acc), data)
+      preorder(root = n.left, pending = nextPending(n, acc) :: pending, acc = accumulate(n, acc), data)
 
     // 2. backtracking
-    case (null, p :: tail) =>
-      preorderLoop(root = backtrackRoot(p), pending = tail, acc = backtrackAcc(p, acc), data)
+    case (null, p :: tail) => preorder(root = backtrackRoot(p), pending = tail, acc = backtrackAcc(p, acc), data)
 
     // 3. done
     case (null, Nil) => acc
