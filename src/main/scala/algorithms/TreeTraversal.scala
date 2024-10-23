@@ -8,7 +8,7 @@ type Tree[A] = TreeNodeGeneric[A] | Null
 
 case class PreorderData[Value, Accumulated, Pending](
     nextPending:   (TreeNodeGeneric[Value], Accumulated) => Pending,
-    nextAcc:       (TreeNodeGeneric[Value], Accumulated) => Accumulated,
+    accumulate:    (TreeNodeGeneric[Value], Accumulated) => Accumulated,
     backtrackRoot: Pending => Tree[Value],
     backtrackAcc:  (Pending, Accumulated) => Accumulated
 )
@@ -22,13 +22,13 @@ def preorderLoop[Value, Accumulated, Pending](
 ): Accumulated =
   import data.*
   (root, pending) match
-    // process node
+    // 1. process node
     case (n: TreeNodeGeneric[_], _) =>
-      preorderLoop(root = n.left, pending = nextPending(n, acc) :: pending, acc = nextAcc(n, acc), data)
+      preorderLoop(root = n.left, pending = nextPending(n, acc) :: pending, acc = accumulate(n, acc), data)
 
-    // backtracking
+    // 2. backtracking
     case (null, p :: tail) =>
       preorderLoop(root = backtrackRoot(p), pending = tail, acc = backtrackAcc(p, acc), data)
 
-    // done
+    // 3. done
     case (null, Nil) => acc

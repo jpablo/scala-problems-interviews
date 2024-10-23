@@ -36,22 +36,26 @@ def maxDepth(root: Tree): Int =
   else
     loop(root, pending = List.empty, rootDepth = 1, maxDepth = 1)
 
-case class Accumulated(rootDepth: Int, maxDepth: Int)
-case class Pending(right: Tree, rightDepth: Int)
+// ---------------------------------
+
+case class Accumulated(rootDepth: Int, maxDepth: Int):
+  def next =
+    Accumulated(rootDepth = rootDepth + 1, maxDepth = maxDepth max rootDepth)
+
+type Pending = (right: Tree, rightDepth: Int)
 
 def maxDepth2(root: Tree): Int =
-  val data =
-    PreorderData[Char, Accumulated, Pending](
-      nextPending   = (n, acc) => Pending(right = n.right, rightDepth = acc.rootDepth + 1),
-      nextAcc       = (_, acc) => Accumulated(rootDepth = acc.rootDepth + 1, maxDepth = acc.maxDepth max acc.rootDepth),
-      backtrackRoot = _.right,
-      backtrackAcc  = (p, acc) => Accumulated(rootDepth = p.rightDepth, maxDepth = acc.maxDepth)
-    )
+  val data = PreorderData[Char, Accumulated, Pending](
+    nextPending   = (n, acc) => (right = n.right, rightDepth = acc.rootDepth + 1),
+    accumulate    = (_, acc) => acc.next,
+    backtrackRoot = _.right,
+    backtrackAcc  = (p, acc) => acc.copy(rootDepth = p.rightDepth)
+  )
 
   if (root == null)
     0
   else
-    preorderLoop(root = root, pending = List.empty[Pending], acc = Accumulated(rootDepth = 1, maxDepth = 1), data).maxDepth
+    preorderLoop(root, pending = List.empty, Accumulated(1, 1), data).maxDepth
 
 @main def main104(): Unit =
   println(maxDepth(node(3, node(9), node(20, node(15), node(7)))))
