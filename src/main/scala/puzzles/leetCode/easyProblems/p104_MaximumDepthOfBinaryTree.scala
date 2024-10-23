@@ -1,6 +1,6 @@
 package puzzles.leetCode.easyProblems
 
-import algorithms.preorderLoop
+import algorithms.{PreorderData, preorderLoop}
 
 import scala.annotation.tailrec
 //import scala.language.unsafeNulls
@@ -40,18 +40,18 @@ case class Accumulated(rootDepth: Int, maxDepth: Int)
 case class Pending(right: Tree, rightDepth: Int)
 
 def maxDepth2(root: Tree): Int =
-  if (root == null)
-    0
-  else
-    preorderLoop(
-      root          = root,
-      pending       = List.empty[Pending],
-      acc           = Accumulated(rootDepth = 1, maxDepth = 1),
+  val data =
+    PreorderData[Char, Accumulated, Pending](
       nextPending   = (n, acc) => Pending(right = n.right, rightDepth = acc.rootDepth + 1),
       nextAcc       = (_, acc) => Accumulated(rootDepth = acc.rootDepth + 1, maxDepth = acc.maxDepth max acc.rootDepth),
       backtrackRoot = _.right,
       backtrackAcc  = (p, acc) => Accumulated(rootDepth = p.rightDepth, maxDepth = acc.maxDepth)
-    ).maxDepth
+    )
+
+  if (root == null)
+    0
+  else
+    preorderLoop(root = root, pending = List.empty[Pending], acc = Accumulated(rootDepth = 1, maxDepth = 1), data).maxDepth
 
 @main def main104(): Unit =
   println(maxDepth(node(3, node(9), node(20, node(15), node(7)))))
