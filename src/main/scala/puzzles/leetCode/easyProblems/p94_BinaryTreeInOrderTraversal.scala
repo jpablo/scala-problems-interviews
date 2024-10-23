@@ -26,9 +26,9 @@ def preorderTraversal(root: TreeNode) =
   @tailrec
   def preorderLoop[B](root: Tree, rightStack: List[Pending], acc: B, f: (Char, B) => B): B =
     (root, rightStack) match
-      case (n: TreeNode, _)    => preorderLoop(root = n.left, rightStack = n.right :: rightStack, acc = f(n.value, acc), f)
-      case (null, right :: rr) => preorderLoop(root = right, rightStack = rr, acc, f)
-      case (null, Nil)         => acc
+      case (null, Nil)           => acc
+      case (null, right :: tail) => preorderLoop(root = right, rightStack = tail, acc, f)
+      case (n: TreeNode, _)      => preorderLoop(root = n.left, rightStack = n.right :: rightStack, acc = f(n.value, acc), f)
 
   preorderLoop(root, rightStack = Nil, acc = Nil, f = (value, acc) => value :: acc).reverse
 
@@ -39,16 +39,15 @@ def preorderTraversal(root: TreeNode) =
   *   - use value when taking a node from the stack
   */
 def inorderTraversal(root: TreeNode): List[Char] =
-  type Pending = TreeNode
+  type Pending = (Tree, Char)
   @tailrec
-  def inorderLoop[B](root: Tree, pending: List[Pending], acc: B, f: (TreeNode, B) => B): B =
+  def inorderLoop[B](root: Tree, pending: List[Pending], acc: B, f: (Char, B) => B): B =
     (root, pending) match
-      case (n: TreeNode, _) => inorderLoop(root = n.left, pending = n :: pending, acc, f)
+      case (null, Nil)                    => acc
+      case (null, (right, value) :: tail) => inorderLoop(root = right, pending = tail, acc = f(value, acc), f)
+      case (n: TreeNode, _)               => inorderLoop(root = n.left, pending = (n.right, n.value) :: pending, acc, f)
 
-      case (null, n :: rr) => inorderLoop(root = n.right, pending = rr, acc = f(n, acc), f)
-      case (null, Nil)     => acc
-
-  inorderLoop(root, pending = Nil, acc = Nil, f = (n, acc) => n.value :: acc).reverse
+  inorderLoop(root, pending = Nil, acc = Nil, f = (value, acc) => value :: acc).reverse
 
 /** postorder: left, right, root
   *
@@ -62,15 +61,14 @@ def postorderTraversal(root: TreeNode): List[Char] =
   @tailrec
   def postOrderLoop[B](root: Tree, pending: List[Pending], acc: B, f: (Char, B) => B): B =
     (root, pending) match
-      case (n: TreeNode, _) => postOrderLoop(n.left, n.right :: n.value :: pending, acc, f)
-
-      case (null, p :: pp) =>
-        p match
-          case right: TreeNode => postOrderLoop(root = right, pp, acc, f)
-          case value: Char     => postOrderLoop(null, pp, f(value, acc), f)
-          case null            => postOrderLoop(null, pp, acc, f)
-
       case (null, Nil) => acc
+      case (null, p :: tail) =>
+        p match
+          case right: TreeNode => postOrderLoop(root = right, tail, acc, f)
+          case value: Char     => postOrderLoop(null, tail, f(value, acc), f)
+          case null            => postOrderLoop(null, tail, acc, f)
+
+      case (n: TreeNode, _) => postOrderLoop(root = n.left, pending = n.right :: n.value :: pending, acc = acc, f = f)
 
   postOrderLoop(root, Nil, Nil, _ :: _).reverse
 

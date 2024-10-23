@@ -1,6 +1,6 @@
 package puzzles.leetCode.easyProblems
 
-import scala.collection.mutable
+import scala.collection.{immutable, mutable}
 import scala.language.unsafeNulls
 import puzzles.leetCode.TreeNodeGeneric
 import puzzles.leetCode.TreeNodeGeneric.node
@@ -8,7 +8,7 @@ import puzzles.leetCode.TreeNodeGeneric.node
 import scala.annotation.tailrec
 
 def isSymmetric[A](root: TreeNodeGeneric[A]): Boolean =
-  root == null || isMirrorRec(collection.immutable.Queue(root.left -> root.right))
+  root == null || isMirrorRec(immutable.Queue(root.left -> root.right))
 
 def isMirror(left: TreeNode, right: TreeNode): Boolean =
   (left, right) match
@@ -19,7 +19,7 @@ def isMirror(left: TreeNode, right: TreeNode): Boolean =
     case _                              => isMirror(left.left, right.right) && isMirror(left.right, right.left)
 
 @tailrec
-def isMirrorRec[A](pairs: collection.immutable.Queue[(TreeNodeGeneric[A], TreeNodeGeneric[A])]): Boolean =
+def isMirrorRec[A](pairs: immutable.Queue[(TreeNodeGeneric[A], TreeNodeGeneric[A])]): Boolean =
   if pairs.isEmpty then
     true
   else
