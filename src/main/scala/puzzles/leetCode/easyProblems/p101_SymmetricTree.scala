@@ -2,9 +2,13 @@ package puzzles.leetCode.easyProblems
 
 import scala.collection.mutable
 import scala.language.unsafeNulls
+import puzzles.leetCode.TreeNodeGeneric
+import puzzles.leetCode.TreeNodeGeneric.node
 
-def isSymmetric(root: TreeNode): Boolean =
-  root == null || isMirror(root.left, root.right)
+import scala.annotation.tailrec
+
+def isSymmetric[A](root: TreeNodeGeneric[A]): Boolean =
+  root == null || isMirrorRec(collection.immutable.Queue(root.left -> root.right))
 
 def isMirror(left: TreeNode, right: TreeNode): Boolean =
   (left, right) match
@@ -14,9 +18,23 @@ def isMirror(left: TreeNode, right: TreeNode): Boolean =
     case _ if left.value != right.value => false
     case _                              => isMirror(left.left, right.right) && isMirror(left.right, right.left)
 
-def isSymmetric2(root: TreeNode): Boolean =
+@tailrec
+def isMirrorRec[A](pairs: collection.immutable.Queue[(TreeNodeGeneric[A], TreeNodeGeneric[A])]): Boolean =
+  if pairs.isEmpty then
+    true
+  else
+    val ((left, right), tail) = pairs.dequeue
+    (left, right) match
+      case (null, null)                   => isMirrorRec(tail)
+      case (null, _)                      => false
+      case (_, null)                      => false
+      case _ if left.value != right.value => false
+      case _                              => isMirrorRec(tail.enqueueAll(List(left.left -> right.right, left.right -> right.left)))
+
+def isSymmetric2[A](root: TreeNodeGeneric[A]): Boolean =
   // duplicate root
   val q = mutable.Queue((root, root))
+
   while q.nonEmpty do
     val (left, right) = q.dequeue
     (left, right) match
@@ -28,11 +46,11 @@ def isSymmetric2(root: TreeNode): Boolean =
   true
 
 val example1 =
-  new TreeNode(1, new TreeNode(2, new TreeNode(3), new TreeNode(4)), new TreeNode(2, new TreeNode(4), new TreeNode(3)))
+  node(1, node(2, node(3), node(4)), node(2, node(4), node(3)))
 
 val example2 =
-  new TreeNode(1, new TreeNode(2, null, new TreeNode(3)), new TreeNode(2, null, new TreeNode(3)))
+  node(1, node(2, null, node(3)), node(2, null, node(3)))
 
 @main def run1(): Unit =
-  println(isSymmetric2(example1))
-  println(isSymmetric2(example2))
+  println(isSymmetric(example1))
+//  println(isSymmetric(example2))
