@@ -38,18 +38,18 @@ def maxDepth(root: Tree): Int =
 
 // ---------------------------------
 
-case class Accumulated(rootDepth: Int, maxDepth: Int):
+case class Accumulated(currentDepth: Int, maxDepth: Int):
   def next =
-    Accumulated(rootDepth = rootDepth + 1, maxDepth = maxDepth max rootDepth)
+    Accumulated(currentDepth = currentDepth + 1, maxDepth = maxDepth max currentDepth)
 
 type Pending = (right: Tree, rightDepth: Int)
 
 def maxDepth2(root: Tree): Int =
   val data = PreorderData[Char, Accumulated, Pending](
-    nextPending   = (n, acc) => (right = n.right, rightDepth = acc.rootDepth + 1),
+    nextPending   = (n, acc) => (right = n.right, rightDepth = acc.currentDepth + 1),
     accumulate    = (_, acc) => acc.next,
     backtrackRoot = p => p.right,
-    backtrackAcc  = (p, acc) => acc.copy(rootDepth = p.rightDepth)
+    backtrackAcc  = (p, acc) => acc.copy(currentDepth = p.rightDepth)
   )
 
   if (root == null)
